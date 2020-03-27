@@ -9,6 +9,9 @@ import com.bc.wd.server.util.CommonUtil;
  */
 public class GoodsCheckResult {
     private String id;
+
+    private String taskId;
+
     /**
      * 物料号
      */
@@ -34,8 +37,10 @@ public class GoodsCheckResult {
 
     }
 
-    public GoodsCheckResult(String goodsNo, String goodsName, String goodsCreator) {
+    public GoodsCheckResult(String taskId, String goodsNo,
+                            String goodsName, String goodsCreator) {
         this.id = CommonUtil.generateId();
+        this.taskId = taskId;
         this.goodsNo = goodsNo;
         this.goodsName = goodsName;
         this.goodsCreator = goodsCreator;
@@ -47,6 +52,14 @@ public class GoodsCheckResult {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getGoodsNo() {

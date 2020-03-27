@@ -31,6 +31,15 @@ public class CommonUtil {
         return sdf.format(new Date());
     }
 
+    /**
+     * 生成任务批次号
+     *
+     * @return 任务批次号
+     */
+    public static String generateTaskBatchNo() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMddHHmmsss");
+        return sdf.format(new Date());
+    }
 
     /**
      * 生成随机n位数

@@ -1,6 +1,7 @@
 package com.bc.wd.server.service;
 
 import com.bc.wd.server.entity.Goods;
+import com.bc.wd.server.entity.Task;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -21,5 +22,5 @@ public interface GoodsService {
     /**
      * 检测物品异常数据
      */
-    void checkGoodsOutLierData();
+    Task checkGoodsOutLierData(Task task);
 }

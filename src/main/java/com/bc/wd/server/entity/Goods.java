@@ -1,7 +1,7 @@
 package com.bc.wd.server.entity;
 
 /**
- * 商品
+ * 物品
  *
  * @author zhou
  */
