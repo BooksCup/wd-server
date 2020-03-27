@@ -1,6 +1,5 @@
 package com.bc.wd.server.controller;
 
-import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.service.GoodsService;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 物品
@@ -27,16 +24,25 @@ public class GoodsController {
     @Resource
     private GoodsService goodsService;
 
-    @ApiOperation(value = "查询物品列表", notes = "查询物品列表")
-    @GetMapping(value = "")
-    public ResponseEntity<List<Goods>> getGoods() {
-        ResponseEntity<List<Goods>> responseEntity;
+    /**
+     * 检测物品异常数据
+     * @return ResponseEntity<String>
+     */
+    @ApiOperation(value = "检测物品异常数据", notes = "检测物品异常数据")
+    @PostMapping(value = "/outLierData")
+    public ResponseEntity<String> checkGoodsOutLierData() {
+        long beginTimeStamp = System.currentTimeMillis();
+        ResponseEntity<String> responseEntity;
         try {
-            List<Goods> goodsList = goodsService.getGoodsList();
-            responseEntity = new ResponseEntity<>(goodsList, HttpStatus.OK);
+            goodsService.checkGoodsOutLierData();
+            long endTimeStamp = System.currentTimeMillis();
+            responseEntity = new ResponseEntity<>(
+                    "[checkGoodsOutLierData] finish, cost: " + (endTimeStamp - beginTimeStamp) + "ms.", HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("getGoods error: " + e.getMessage());
-            responseEntity = new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("[checkGoodsOutLierData] error: " + e.getMessage());
+            long endTimeStamp = System.currentTimeMillis();
+            responseEntity = new ResponseEntity<>(
+                    "[checkGoodsOutLierData] finish, cost: " + (endTimeStamp - beginTimeStamp) + "ms.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }
