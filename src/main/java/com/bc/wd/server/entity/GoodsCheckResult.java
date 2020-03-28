@@ -33,6 +33,8 @@ public class GoodsCheckResult {
 
     private boolean passFlag;
 
+    private Integer outLierDataNum;
+
     public GoodsCheckResult() {
 
     }
@@ -112,6 +114,14 @@ public class GoodsCheckResult {
 
     public boolean checkPass() {
         return this.nameCheckFlag && this.photoCheckFlag;
+    }
+
+    public Integer getOutLierDataNum() {
+        return outLierDataNum;
+    }
+
+    public void setOutLierDataNum(Integer outLierDataNum) {
+        this.outLierDataNum = outLierDataNum;
     }
 
     @Override

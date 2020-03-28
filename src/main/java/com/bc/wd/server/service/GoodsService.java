@@ -21,6 +21,17 @@ public interface GoodsService {
 
     /**
      * 检测物品异常数据
+     *
+     * @param task 检测任务
+     * @return 检测任务
      */
     Task checkGoodsOutLierData(Task task);
+
+    /**
+     * 生成报表(版本:v1)
+     *
+     * @param taskId 任务ID
+     * @throws Exception 异常
+     */
+    void generateReportV1(String taskId) throws Exception;
 }

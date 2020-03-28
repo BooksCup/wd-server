@@ -2,6 +2,7 @@ package com.bc.wd.server.controller;
 
 import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Task;
+import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.GoodsService;
 import com.bc.wd.server.service.TaskService;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,7 @@ public class GoodsController {
     /**
      * 检测物品异常数据
      *
+     * @param taskName 任务名(选填)
      * @return ResponseEntity<String>
      */
     @ApiOperation(value = "检测物品异常数据", notes = "检测物品异常数据")
@@ -58,4 +60,23 @@ public class GoodsController {
         return responseEntity;
     }
 
+    /**
+     * 生成异常数据报表(版本号:v1)
+     *
+     * @param taskId 任务ID
+     * @return ResponseEntity<String>
+     */
+    @ApiOperation(value = "检测物品异常数据", notes = "检测物品异常数据")
+    @PostMapping(value = "/v1/outLierDataReport")
+    public ResponseEntity<String> generateGoodsOutLierDataReportV1(@RequestParam String taskId) {
+        ResponseEntity<String> responseEntity;
+        try {
+            goodsService.generateReportV1(taskId);
+            responseEntity = new ResponseEntity<>(ResponseMsg.GENERATE_REPORT_SUCCESS.getResponseCode(), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            responseEntity = new ResponseEntity<>(ResponseMsg.GENERATE_REPORT_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
 }
