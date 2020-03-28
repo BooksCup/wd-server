@@ -5,6 +5,7 @@ import com.bc.wd.server.entity.GoodsCheckResult;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.mapper.GoodsMapper;
 import com.bc.wd.server.service.GoodsService;
+import com.bc.wd.server.util.CommonUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +71,7 @@ public class GoodsServiceImpl implements GoodsService {
         int pageSize = 20;
         // 从第一页开始，获取所有页数然后遍历
         PageInfo<Goods> firstPage = getGoodsPageInfo(1, pageSize);
-        long totalPage = firstPage.getTotal();
+        int totalPage = firstPage.getPages();
         for (int pageNum = 2; pageNum <= totalPage; pageNum++) {
             PageInfo<Goods> pageInfo = getGoodsPageInfo(pageNum, pageSize);
             List<Goods> goodsList = pageInfo.getList();
@@ -86,6 +87,8 @@ public class GoodsServiceImpl implements GoodsService {
                 }
                 if (!checkResult.checkPass()) {
                     // 检测未通过
+                    logger.info("totalPage: " + totalPage + ", pageNum: "
+                            + pageNum + ", goodsId: " + goods.getId());
                     logger.info("out lier data: " + checkResult);
                     outLierDataNum++;
                     mongoTemplate.insert(checkResult);
@@ -140,9 +143,17 @@ public class GoodsServiceImpl implements GoodsService {
                 index++;
             }
         }
+        FileOutputStream fileOutputStream;
+        String osName = System.getProperties().getProperty("os.name");
+
+        String fileName = CommonUtil.generateId() + ".xls";
 
         // 创建输出流
-        FileOutputStream fileOutputStream = new FileOutputStream("D://1_1111111//a.xls");
+        if (osName.startsWith("win") || osName.startsWith("Win")) {
+            fileOutputStream = new FileOutputStream("D://data-monitor-report//" + fileName);
+        } else {
+            fileOutputStream = new FileOutputStream("home/data-monitor-report/" + fileName);
+        }
         // 将workbook写入流中
         workbook.write(fileOutputStream);
         // 关流

@@ -1,10 +1,12 @@
 package com.bc.wd.server.controller;
 
 import com.bc.wd.server.cons.Constant;
+import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.GoodsService;
 import com.bc.wd.server.service.TaskService;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,21 @@ public class GoodsController {
     private TaskService taskService;
 
     /**
+     * 查询物品分页信息
+     *
+     * @param pageNum  当前分页数
+     * @param pageSize 分页大小
+     * @return 物品分页信息
+     */
+    @ApiOperation(value = "查询物品分页信息", notes = "查询物品分页信息")
+    @GetMapping(value = "")
+    public ResponseEntity<PageInfo<Goods>> getGoodsPageInfo(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+
+        PageInfo<Goods> goodsPageInfo = goodsService.getGoodsPageInfo(pageNum, pageSize);
+        return new ResponseEntity<>(goodsPageInfo, HttpStatus.OK);
+    }
+
+    /**
      * 检测物品异常数据
      *
      * @param taskName 任务名(选填)
@@ -46,6 +63,8 @@ public class GoodsController {
         try {
             task = goodsService.checkGoodsOutLierData(task);
             task.setStatus(Constant.TASK_STATUS_SUCCESS);
+
+            goodsService.generateReportV1(task.getId());
             long endTimeStamp = System.currentTimeMillis();
             responseEntity = new ResponseEntity<>(
                     "[checkGoodsOutLierData] finish, cost: " + (endTimeStamp - beginTimeStamp) + "ms.", HttpStatus.OK);
