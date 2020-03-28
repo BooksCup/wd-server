@@ -27,6 +27,11 @@ public class GoodsCheckResult {
      */
     private String goodsCreator;
 
+    /**
+     * 创建时间
+     */
+    private String createTime;
+
     private boolean nameCheckFlag = true;
 
     private boolean photoCheckFlag = true;
@@ -40,12 +45,13 @@ public class GoodsCheckResult {
     }
 
     public GoodsCheckResult(String taskId, String goodsNo,
-                            String goodsName, String goodsCreator) {
+                            String goodsName, String goodsCreator, String createTime) {
         this.id = CommonUtil.generateId();
         this.taskId = taskId;
         this.goodsNo = goodsNo;
         this.goodsName = goodsName;
         this.goodsCreator = goodsCreator;
+        this.createTime = createTime;
     }
 
     public String getId() {
@@ -88,6 +94,14 @@ public class GoodsCheckResult {
         this.goodsCreator = goodsCreator;
     }
 
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
     public boolean isNameCheckFlag() {
         return nameCheckFlag;
     }
@@ -128,12 +142,15 @@ public class GoodsCheckResult {
     public String toString() {
         return "GoodsCheckResult{" +
                 "id='" + id + '\'' +
+                ", taskId='" + taskId + '\'' +
                 ", goodsNo='" + goodsNo + '\'' +
                 ", goodsName='" + goodsName + '\'' +
                 ", goodsCreator='" + goodsCreator + '\'' +
+                ", createTime='" + createTime + '\'' +
                 ", nameCheckFlag=" + nameCheckFlag +
                 ", photoCheckFlag=" + photoCheckFlag +
                 ", passFlag=" + passFlag +
+                ", outLierDataNum=" + outLierDataNum +
                 '}';
     }
 }

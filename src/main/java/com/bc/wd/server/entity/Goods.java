@@ -11,6 +11,7 @@ public class Goods {
     private String goodsNo;
     private String goodsName;
     private String goodsCreator;
+    private String createTime;
 
     public String getId() {
         return id;
@@ -50,5 +51,13 @@ public class Goods {
 
     public void setGoodsCreator(String goodsCreator) {
         this.goodsCreator = goodsCreator;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

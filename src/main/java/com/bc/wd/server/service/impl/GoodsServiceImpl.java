@@ -78,7 +78,7 @@ public class GoodsServiceImpl implements GoodsService {
             for (Goods goods : goodsList) {
                 GoodsCheckResult checkResult = new GoodsCheckResult(
                         task.getId(),
-                        goods.getGoodsNo(), goods.getGoodsName(), goods.getGoodsCreator());
+                        goods.getGoodsNo(), goods.getGoodsName(), goods.getGoodsCreator(), goods.getCreateTime());
                 if (StringUtils.isEmpty(goods.getGoodsName())) {
                     checkResult.setNameCheckFlag(false);
                 }
@@ -171,15 +171,17 @@ public class GoodsServiceImpl implements GoodsService {
         XSSFSheet sheet = workbook.createSheet(sheetName);
 
         // 设置每一列的宽度
-        int moduleNameWidth = 15;
-        int backlogDescWidth = 80;
-        int backlogDeadLineWidth = 15;
-        int backlogStatusWidth = 15;
+        int goodsNoWidth = 15;
+        int goodsNameWidth = 80;
+        int creatorWidth = 15;
+        int createTimeWidth = 30;
+        int reasonWidth = 30;
 
-        sheet.setColumnWidth(0, moduleNameWidth * 256);
-        sheet.setColumnWidth(1, backlogDescWidth * 256);
-        sheet.setColumnWidth(2, backlogDeadLineWidth * 256);
-        sheet.setColumnWidth(3, backlogStatusWidth * 256);
+        sheet.setColumnWidth(0, goodsNoWidth * 256);
+        sheet.setColumnWidth(1, goodsNameWidth * 256);
+        sheet.setColumnWidth(2, creatorWidth * 256);
+        sheet.setColumnWidth(3, createTimeWidth * 256);
+        sheet.setColumnWidth(4, reasonWidth * 256);
         // 设置标题行
         XSSFRow titleRow = sheet.createRow(0);
 
@@ -213,7 +215,11 @@ public class GoodsServiceImpl implements GoodsService {
 
         XSSFCell titleCell4 = titleRow.createCell(3);
         titleCell4.setCellStyle(titleCellStyle);
-        titleCell4.setCellValue("违规原因");
+        titleCell4.setCellValue("创建时间");
+
+        XSSFCell titleCell5 = titleRow.createCell(4);
+        titleCell5.setCellStyle(titleCellStyle);
+        titleCell5.setCellValue("违规原因");
         return sheet;
     }
 
@@ -241,6 +247,10 @@ public class GoodsServiceImpl implements GoodsService {
         XSSFCell contentCell3 = contentRow.createCell(2);
         contentCell3.setCellValue(goodsCheckResult.getGoodsCreator());
 
+        // 创建时间
+        XSSFCell contentCell4 = contentRow.createCell(3);
+        contentCell4.setCellValue(goodsCheckResult.getCreateTime());
+
 
         // 设置标题单元格样式
         XSSFCellStyle reasonCellStyle = workbook.createCellStyle();
@@ -256,9 +266,8 @@ public class GoodsServiceImpl implements GoodsService {
         // 将字体样式添加到单元格样式中
         reasonCellStyle.setFont(reasonFont);
 
-
         // 违规字段
-        XSSFCell contentCell4 = contentRow.createCell(3);
+        XSSFCell contentCell5 = contentRow.createCell(4);
         StringBuffer reasonBuffer = new StringBuffer();
         if (!goodsCheckResult.isNameCheckFlag()) {
             reasonBuffer.append("品名未填,");
@@ -270,7 +279,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (reasonBuffer.length() > 1) {
             reasonBuffer.deleteCharAt(reasonBuffer.length() - 1);
         }
-        contentCell4.setCellStyle(reasonCellStyle);
-        contentCell4.setCellValue(reasonBuffer.toString());
+        contentCell5.setCellStyle(reasonCellStyle);
+        contentCell5.setCellValue(reasonBuffer.toString());
     }
 }
