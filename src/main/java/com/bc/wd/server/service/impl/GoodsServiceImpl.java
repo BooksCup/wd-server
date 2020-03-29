@@ -82,7 +82,7 @@ public class GoodsServiceImpl implements GoodsService {
                 if (StringUtils.isEmpty(goods.getGoodsName())) {
                     checkResult.setNameCheckFlag(false);
                 }
-                if (StringUtils.isEmpty(goods.getGoodsPhotos())) {
+                if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
                     checkResult.setPhotoCheckFlag(false);
                 }
                 if (!checkResult.checkPass()) {
@@ -149,7 +149,7 @@ public class GoodsServiceImpl implements GoodsService {
         String fileName = CommonUtil.generateId() + ".xls";
 
         // 创建输出流
-        if (osName.startsWith("win") || osName.startsWith("Win")) {
+        if (osName.toLowerCase().startsWith("win")) {
             fileOutputStream = new FileOutputStream("D://data-monitor-report//" + fileName);
         } else {
             fileOutputStream = new FileOutputStream("home/data-monitor-report/" + fileName);

@@ -85,7 +85,7 @@ public class GoodsController {
      * @param taskId 任务ID
      * @return ResponseEntity<String>
      */
-    @ApiOperation(value = "检测物品异常数据", notes = "检测物品异常数据")
+    @ApiOperation(value = "生成异常数据报表(版本号:v1)", notes = "生成异常数据报表(版本号:v1)")
     @PostMapping(value = "/v1/outLierDataReport")
     public ResponseEntity<String> generateGoodsOutLierDataReportV1(@RequestParam String taskId) {
         ResponseEntity<String> responseEntity;
