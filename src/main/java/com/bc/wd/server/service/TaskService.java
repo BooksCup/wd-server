@@ -25,4 +25,11 @@ public interface TaskService {
      * @param task 任务
      */
     void saveTask(Task task);
+
+    /**
+     * 修改任务
+     *
+     * @param task 任务
+     */
+    void updateTask(Task task);
 }

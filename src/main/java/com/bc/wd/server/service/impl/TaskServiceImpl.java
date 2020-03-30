@@ -7,7 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -53,5 +55,20 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void saveTask(Task task) {
         mongoTemplate.insert(task);
+    }
+
+    /**
+     * 修改任务
+     *
+     * @param task 任务
+     */
+    @Override
+    public void updateTask(Task task) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(task.getId()));
+        Update update = new Update();
+        update.set("outLierDataNum", task.getOutLierDataNum());
+        update.set("status", task.getStatus());
+        mongoTemplate.updateFirst(query, update, Task.class);
     }
 }
