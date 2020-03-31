@@ -39,6 +39,9 @@ public class CheckScheduleTask {
         List<Task> todoTaskList = taskService.getTodoTaskList();
         for (Task task : todoTaskList) {
             try {
+                task.setStatus(Constant.TASK_STATUS_ING);
+                taskService.updateTask(task);
+
                 task = goodsService.checkGoodsOutLierData(task);
                 task.setStatus(Constant.TASK_STATUS_SUCCESS);
             } catch (Exception e) {
