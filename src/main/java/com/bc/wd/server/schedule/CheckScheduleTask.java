@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 /**
- * 定时检测任务五
+ * 定时检测任务
  *
  * @author zhou
  */
@@ -45,6 +45,8 @@ public class CheckScheduleTask {
                 taskService.updateTask(task);
 
                 task = goodsService.checkGoodsOutLierData(task);
+                String fileName = goodsService.generateReportV1(task.getId());
+                task.setFileName(fileName);
                 task.setStatus(Constant.TASK_STATUS_SUCCESS);
             } catch (Exception e) {
                 e.printStackTrace();

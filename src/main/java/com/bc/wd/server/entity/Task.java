@@ -17,6 +17,10 @@ public class Task {
     private String status;
     private String createTime;
     private String costTime;
+    /**
+     * 报表文件名
+     */
+    private String fileName;
 
     public Task() {
 
@@ -96,5 +100,13 @@ public class Task {
 
     public void setCostTime(String costTime) {
         this.costTime = costTime;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

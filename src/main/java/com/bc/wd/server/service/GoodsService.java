@@ -31,7 +31,8 @@ public interface GoodsService {
      * 生成报表(版本:v1)
      *
      * @param taskId 任务ID
+     * @return 报表文件名
      * @throws Exception 异常
      */
-    void generateReportV1(String taskId) throws Exception;
+    String generateReportV1(String taskId) throws Exception;
 }

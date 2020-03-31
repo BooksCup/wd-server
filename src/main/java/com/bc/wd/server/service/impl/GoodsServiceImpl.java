@@ -105,10 +105,11 @@ public class GoodsServiceImpl implements GoodsService {
      * 生成报表(版本:v1)
      *
      * @param taskId 任务ID
+     * @return 报表文件名
      * @throws Exception 异常
      */
     @Override
-    public void generateReportV1(String taskId) throws Exception {
+    public String generateReportV1(String taskId) throws Exception {
         // 创建Excel对象
         XSSFWorkbook workbook = new XSSFWorkbook();
         Query query = new Query();
@@ -158,6 +159,7 @@ public class GoodsServiceImpl implements GoodsService {
         workbook.write(fileOutputStream);
         // 关流
         fileOutputStream.close();
+        return fileName;
     }
 
     /**
