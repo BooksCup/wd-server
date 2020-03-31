@@ -3,6 +3,7 @@ package com.bc.wd.server.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -65,5 +66,17 @@ public class CommonUtil {
     public static String formatTimeStamp(long timestamp, SimpleDateFormat formatter) {
         Date date = new Date(timestamp);
         return formatter.format(date);
+    }
+
+    /**
+     * 毫秒转换为时分秒
+     *
+     * @param timeStamp 毫秒
+     * @return 时分秒
+     */
+    public static String getGapTime(long timeStamp) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        return formatter.format(timeStamp);
     }
 }

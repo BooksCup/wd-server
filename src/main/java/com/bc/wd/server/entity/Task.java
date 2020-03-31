@@ -16,6 +16,7 @@ public class Task {
     private Integer outLierDataNum;
     private String status;
     private String createTime;
+    private String costTime;
 
     public Task() {
 
@@ -25,9 +26,9 @@ public class Task {
         this.id = CommonUtil.generateId();
         this.type = type;
         this.batchNo = CommonUtil.generateTaskBatchNo();
-        if (StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             this.name = this.batchNo;
-        } else{
+        } else {
             this.name = name;
         }
         this.createTime = CommonUtil.now();
@@ -87,5 +88,13 @@ public class Task {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getCostTime() {
+        return costTime;
+    }
+
+    public void setCostTime(String costTime) {
+        this.costTime = costTime;
     }
 }

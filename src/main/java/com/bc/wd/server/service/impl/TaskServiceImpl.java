@@ -70,6 +70,7 @@ public class TaskServiceImpl implements TaskService {
         Update update = new Update();
         update.set("outLierDataNum", task.getOutLierDataNum());
         update.set("status", task.getStatus());
+        update.set("costTime", task.getCostTime());
         mongoTemplate.updateFirst(query, update, Task.class);
     }
 
