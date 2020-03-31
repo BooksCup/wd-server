@@ -1,5 +1,6 @@
 package com.bc.wd.server.service.impl;
 
+import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.service.TaskService;
 import com.github.pagehelper.PageInfo;
@@ -70,5 +71,17 @@ public class TaskServiceImpl implements TaskService {
         update.set("outLierDataNum", task.getOutLierDataNum());
         update.set("status", task.getStatus());
         mongoTemplate.updateFirst(query, update, Task.class);
+    }
+
+    /**
+     * 获取待处理任务列表
+     *
+     * @return 待处理任务列表
+     */
+    @Override
+    public List<Task> getTodoTaskList() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("status").is(Constant.TASK_STATUS_NEW));
+        return mongoTemplate.find(query, Task.class);
     }
 }

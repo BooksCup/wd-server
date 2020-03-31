@@ -20,15 +20,20 @@ public class Constant {
     /**
      * 任务状态-"成功"
      */
-    public static final String TASK_STATUS_SUCCESS = "1";
+    public static final String TASK_STATUS_SUCCESS = "2";
 
     /**
      * 任务状态-"失败"
      */
-    public static final String TASK_STATUS_FAIL = "2";
+    public static final String TASK_STATUS_FAIL = "3";
 
     /**
      * 任务状态-"进行中"
      */
-    public static final String TASK_STATUS_ING = "0";
+    public static final String TASK_STATUS_ING = "1";
+
+    /**
+     * 任务状态-"新建"
+     */
+    public static final String TASK_STATUS_NEW = "0";
 }

@@ -3,6 +3,8 @@ package com.bc.wd.server.service;
 import com.bc.wd.server.entity.Task;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * 任务
  *
@@ -32,4 +34,11 @@ public interface TaskService {
      * @param task 任务
      */
     void updateTask(Task task);
+
+    /**
+     * 获取待处理任务列表
+     *
+     * @return 待处理任务列表
+     */
+    List<Task> getTodoTaskList();
 }

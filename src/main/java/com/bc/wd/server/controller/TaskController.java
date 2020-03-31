@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-    private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
     @Resource
     private TaskService taskService;
@@ -69,16 +69,9 @@ public class TaskController {
         // 初始化任务
         Task task = new Task(type, name);
         try {
-            task.setStatus(Constant.TASK_STATUS_ING);
+            task.setStatus(Constant.TASK_STATUS_NEW);
             task.setOutLierDataNum(0);
             taskService.saveTask(task);
-
-            // TODO
-            // 后面可以做成异步
-            // 执行检测
-            task = goodsService.checkGoodsOutLierData(task);
-            task.setStatus(Constant.TASK_STATUS_SUCCESS);
-            taskService.updateTask(task);
 
             responseEntity = new ResponseEntity<>(task, HttpStatus.OK);
         } catch (Exception e) {
