@@ -1,5 +1,6 @@
 package com.bc.wd.server.service.impl;
 
+import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.entity.GoodsCheckResult;
 import com.bc.wd.server.entity.Task;
@@ -150,10 +151,10 @@ public class GoodsServiceImpl implements GoodsService {
         String fileName = CommonUtil.generateId() + ".xls";
 
         // 创建输出流
-        if (osName.toLowerCase().startsWith("win")) {
+        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
             fileOutputStream = new FileOutputStream("D://data-monitor-report//" + fileName);
         } else {
-            fileOutputStream = new FileOutputStream("home/data-monitor-report/" + fileName);
+            fileOutputStream = new FileOutputStream("/usr/share/nginx/html/report/" + fileName);
         }
         // 将workbook写入流中
         workbook.write(fileOutputStream);

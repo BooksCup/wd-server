@@ -36,4 +36,9 @@ public class Constant {
      * 任务状态-"新建"
      */
     public static final String TASK_STATUS_NEW = "0";
+
+    /**
+     * 操作系统-windows
+     */
+    public static final String OS_NAME_WINDOWS = "win";
 }

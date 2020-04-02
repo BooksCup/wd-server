@@ -34,6 +34,11 @@ public class CheckScheduleTask {
 
     @Scheduled(cron = "0/30 * * * * ?")
     private void execute() {
+        String osName = System.getProperties().getProperty("os.name");
+        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+            return;
+        }
+
         logger.info("check task start...");
         logger.info("time: " + LocalTime.now());
 
