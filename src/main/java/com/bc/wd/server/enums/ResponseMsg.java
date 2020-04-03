@@ -10,7 +10,10 @@ public enum ResponseMsg {
      * 接口返回信息
      */
     GENERATE_REPORT_SUCCESS("GENERATE_REPORT_SUCCESS", "报表生成成功"),
-    GENERATE_REPORT_ERROR("GENERATE_REPORT_ERROR", "报表生成失败"),;
+    GENERATE_REPORT_ERROR("GENERATE_REPORT_ERROR", "报表生成失败"),
+    SEND_SIMPLE_MAIL_SUCCESS("SEND_SIMPLE_MAIL_SUCCESS", "简易邮件发送成功"),
+    SEND_SIMPLE_MAIL_ERROR("SEND_SIMPLE_MAIL_ERROR", "简易邮件发送失败"),
+    ;
 
     ResponseMsg(String responseCode, String responseMessage) {
         this.responseCode = responseCode;
