@@ -1,15 +1,17 @@
 package com.bc.wd.server.service.impl;
 
+import com.bc.wd.server.entity.MailReceiver;
 import com.bc.wd.server.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 
@@ -23,6 +25,9 @@ public class MailServiceImpl implements MailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Resource
+    private MongoTemplate mongoTemplate;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -76,7 +81,13 @@ public class MailServiceImpl implements MailService {
         javaMailSender.send(mimeMessage);
     }
 
-    public void saveMail(){
-
+    /**
+     * 保存邮件接收者
+     *
+     * @param mailReceiver 邮件接收者
+     */
+    @Override
+    public void saveMailReceiver(MailReceiver mailReceiver) {
+        mongoTemplate.save(mailReceiver);
     }
 }

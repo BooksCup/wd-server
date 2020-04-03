@@ -1,5 +1,7 @@
 package com.bc.wd.server.service;
 
+import com.bc.wd.server.entity.MailReceiver;
+
 /**
  * 邮箱
  *
@@ -27,4 +29,11 @@ public interface MailService {
      */
     void sendMimeMessage(String to, String subject, String text,
                                 String attachmentFileName, String attachmentFilePath) throws Exception;
+
+    /**
+     * 保存邮件接收者
+     *
+     * @param mailReceiver 邮件接收者
+     */
+    void saveMailReceiver(MailReceiver mailReceiver);
 }

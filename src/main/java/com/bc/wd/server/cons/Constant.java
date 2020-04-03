@@ -41,4 +41,9 @@ public class Constant {
      * 操作系统-windows
      */
     public static final String OS_NAME_WINDOWS = "win";
+
+    /**
+     * 是否开启-"开/on"
+     */
+    public static final String SWITCH_ON = "0";
 }

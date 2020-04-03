@@ -11,8 +11,10 @@ public enum ResponseMsg {
      */
     GENERATE_REPORT_SUCCESS("GENERATE_REPORT_SUCCESS", "报表生成成功"),
     GENERATE_REPORT_ERROR("GENERATE_REPORT_ERROR", "报表生成失败"),
-    SEND_MAIL_SUCCESS("SEND_MAIL_SUCCESS", "邮件发送成功"),
-    SEND_MAIL_ERROR("SEND_MAIL_ERROR", "邮件发送失败"),;
+    SEND_MAIL_MESSAGE_SUCCESS("SEND_MAIL_SUCCESS", "邮件发送成功"),
+    SEND_MAIL_MESSAGE_ERROR("SEND_MAIL_ERROR", "邮件发送失败"),
+    SAVE_MAIL_RECEIVER_SUCCESS("SAVE_MAIL_RECEIVER_SUCCESS", "保存邮件接收人成功"),
+    SAVE_MAIL_RECEIVER_ERROR("SAVE_MAIL_RECEIVER_ERROR", "保存邮件接收人失败"),;
 
     ResponseMsg(String responseCode, String responseMessage) {
         this.responseCode = responseCode;
