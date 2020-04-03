@@ -46,4 +46,19 @@ public class Constant {
      * 是否开启-"开/on"
      */
     public static final String SWITCH_ON = "0";
+
+    /**
+     * 是否开启-"关/off"
+     */
+    public static final String SWITCH_OFF = "1";
+
+    /**
+     * 报表存放路径-windows
+     */
+    public static final String REPORT_FILE_PATH_WINDOWS = "D://data-monitor-report//";
+
+    /**
+     * 报表存放路径-linux
+     */
+    public static final String REPORT_FILE_PATH_LINUX = "/usr/share/nginx/html/report/";
 }

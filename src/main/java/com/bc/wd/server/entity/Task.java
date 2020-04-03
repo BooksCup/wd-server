@@ -3,6 +3,9 @@ package com.bc.wd.server.entity;
 import com.bc.wd.server.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 检测任务
  *
@@ -31,7 +34,8 @@ public class Task {
         this.type = type;
         this.batchNo = CommonUtil.generateTaskBatchNo();
         if (StringUtils.isEmpty(name)) {
-            this.name = this.batchNo;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            this.name = simpleDateFormat.format(new Date());
         } else {
             this.name = name;
         }

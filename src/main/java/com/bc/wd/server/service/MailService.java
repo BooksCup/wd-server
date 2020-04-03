@@ -1,6 +1,9 @@
 package com.bc.wd.server.service;
 
 import com.bc.wd.server.entity.MailReceiver;
+import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * 邮箱
@@ -28,7 +31,7 @@ public interface MailService {
      * @throws Exception 异常
      */
     void sendMimeMessage(String to, String subject, String text,
-                                String attachmentFileName, String attachmentFilePath) throws Exception;
+                         String attachmentFileName, String attachmentFilePath) throws Exception;
 
     /**
      * 保存邮件接收者
@@ -36,4 +39,20 @@ public interface MailService {
      * @param mailReceiver 邮件接收者
      */
     void saveMailReceiver(MailReceiver mailReceiver);
+
+    /**
+     * 获取邮件接收者列表
+     *
+     * @return 邮件接收者列表
+     */
+    List<MailReceiver> getMailReceiverList();
+
+    /**
+     * 查询邮件接收者分页信息
+     *
+     * @param pageNum  当前分页数
+     * @param pageSize 分页大小
+     * @return 邮件接收者分页信息
+     */
+    PageInfo<MailReceiver> getMailReceiverPageInfo(int pageNum, int pageSize);
 }

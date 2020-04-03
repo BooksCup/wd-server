@@ -1,8 +1,10 @@
 package com.bc.wd.server.schedule;
 
 import com.bc.wd.server.cons.Constant;
+import com.bc.wd.server.entity.MailReceiver;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.service.GoodsService;
+import com.bc.wd.server.service.MailService;
 import com.bc.wd.server.service.TaskService;
 import com.bc.wd.server.util.CommonUtil;
 import org.slf4j.Logger;
@@ -32,13 +34,15 @@ public class CheckScheduleTask {
     @Resource
     private GoodsService goodsService;
 
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Resource
+    private MailService mailService;
+
+    @Scheduled(cron = "0/20 * * * * ?")
     private void execute() {
         String osName = System.getProperties().getProperty("os.name");
-        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
-            return;
-        }
-
+//        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+//            return;
+//        }
         logger.info("check task start...");
         logger.info("time: " + LocalTime.now());
 
@@ -57,6 +61,29 @@ public class CheckScheduleTask {
                 e.printStackTrace();
                 task.setStatus(Constant.TASK_STATUS_FAIL);
             }
+
+            List<MailReceiver> mailReceiverList = mailService.getMailReceiverList();
+            for (MailReceiver mailReceiver : mailReceiverList) {
+                if (Constant.SWITCH_OFF.equals(mailReceiver.getOnOff())) {
+                    continue;
+                }
+                String to = mailReceiver.getMail();
+                String subject = task.getName();
+                String text = "统计结果在附件中，请查收!";
+                String attachmentFileName = task.getName() + ".xls";
+                String attachmentFilePath;
+                if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+                    attachmentFilePath = Constant.REPORT_FILE_PATH_WINDOWS + task.getFileName();
+                } else {
+                    attachmentFilePath = Constant.REPORT_FILE_PATH_LINUX + task.getFileName();
+                }
+                try {
+                    mailService.sendMimeMessage(to, subject, text, attachmentFileName, attachmentFilePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             long endTimeStamp = System.currentTimeMillis();
             task.setCostTime(CommonUtil.getGapTime(endTimeStamp - beginTimeStamp));
             taskService.updateTask(task);

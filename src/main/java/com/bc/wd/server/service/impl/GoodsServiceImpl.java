@@ -152,9 +152,9 @@ public class GoodsServiceImpl implements GoodsService {
 
         // 创建输出流
         if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
-            fileOutputStream = new FileOutputStream("D://data-monitor-report//" + fileName);
+            fileOutputStream = new FileOutputStream(Constant.REPORT_FILE_PATH_WINDOWS + fileName);
         } else {
-            fileOutputStream = new FileOutputStream("/usr/share/nginx/html/report/" + fileName);
+            fileOutputStream = new FileOutputStream(Constant.REPORT_FILE_PATH_LINUX + fileName);
         }
         // 将workbook写入流中
         workbook.write(fileOutputStream);

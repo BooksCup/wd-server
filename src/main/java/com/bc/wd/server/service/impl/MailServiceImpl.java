@@ -2,9 +2,14 @@ package com.bc.wd.server.service.impl;
 
 import com.bc.wd.server.entity.MailReceiver;
 import com.bc.wd.server.service.MailService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,6 +19,7 @@ import org.springframework.util.ResourceUtils;
 import javax.annotation.Resource;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.List;
 
 /**
  * 邮箱
@@ -89,5 +95,37 @@ public class MailServiceImpl implements MailService {
     @Override
     public void saveMailReceiver(MailReceiver mailReceiver) {
         mongoTemplate.save(mailReceiver);
+    }
+
+    /**
+     * 获取邮件接收者列表
+     *
+     * @return 邮件接收者列表
+     */
+    @Override
+    public List<MailReceiver> getMailReceiverList() {
+        return mongoTemplate.findAll(MailReceiver.class);
+    }
+
+    /**
+     * 查询邮件接收者分页信息
+     *
+     * @param pageNum  当前分页数
+     * @param pageSize 分页大小
+     * @return 邮件接收者分页信息
+     */
+    @Override
+    public PageInfo<MailReceiver> getMailReceiverPageInfo(int pageNum, int pageSize) {
+        pageNum = pageNum >= 1 ? pageNum - 1 : 0;
+        Query query = new Query();
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        query.with(pageable);
+        query.with(new Sort(Sort.Direction.DESC, "createTime"));
+        long count = mongoTemplate.count(query, MailReceiver.class);
+        List<MailReceiver> mailReceiverList = mongoTemplate.find(query, MailReceiver.class);
+        PageInfo<MailReceiver> pageInfo = new PageInfo();
+        pageInfo.setList(mailReceiverList);
+        pageInfo.setTotal(count);
+        return pageInfo;
     }
 }
