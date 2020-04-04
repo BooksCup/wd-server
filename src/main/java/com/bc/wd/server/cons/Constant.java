@@ -61,4 +61,14 @@ public class Constant {
      * 报表存放路径-linux
      */
     public static final String REPORT_FILE_PATH_LINUX = "/usr/share/nginx/html/report/";
+
+    /**
+     * 邮件发送状态-"成功"
+     */
+    public static final String MAIL_SEND_STATUS_SUCCESS = "0";
+
+    /**
+     * 邮件发送状态-"失败"
+     */
+    public static final String MAIL_SEND_STATUS_ERROR = "1";
 }

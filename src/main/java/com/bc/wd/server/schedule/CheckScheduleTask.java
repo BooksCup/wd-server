@@ -2,8 +2,10 @@ package com.bc.wd.server.schedule;
 
 import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.MailReceiver;
+import com.bc.wd.server.entity.MailSendLog;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.service.GoodsService;
+import com.bc.wd.server.service.MailSendLogService;
 import com.bc.wd.server.service.MailService;
 import com.bc.wd.server.service.TaskService;
 import com.bc.wd.server.util.CommonUtil;
@@ -37,6 +39,9 @@ public class CheckScheduleTask {
     @Resource
     private MailService mailService;
 
+    @Resource
+    private MailSendLogService mailSendLogService;
+
     @Scheduled(cron = "0/20 * * * * ?")
     private void execute() {
         String osName = System.getProperties().getProperty("os.name");
@@ -62,25 +67,31 @@ public class CheckScheduleTask {
                 task.setStatus(Constant.TASK_STATUS_FAIL);
             }
 
-            List<MailReceiver> mailReceiverList = mailService.getMailReceiverList();
-            for (MailReceiver mailReceiver : mailReceiverList) {
-                if (Constant.SWITCH_OFF.equals(mailReceiver.getOnOff())) {
-                    continue;
-                }
-                String to = mailReceiver.getMail();
-                String subject = task.getName();
-                String text = "统计结果在附件中，请查收!";
-                String attachmentFileName = task.getName() + ".xls";
-                String attachmentFilePath;
-                if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
-                    attachmentFilePath = Constant.REPORT_FILE_PATH_WINDOWS + task.getFileName();
-                } else {
-                    attachmentFilePath = Constant.REPORT_FILE_PATH_LINUX + task.getFileName();
-                }
-                try {
-                    mailService.sendMimeMessage(to, subject, text, attachmentFileName, attachmentFilePath);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            if (Constant.TASK_STATUS_SUCCESS.equals(task.getStatus())) {
+                List<MailReceiver> mailReceiverList = mailService.getMailReceiverList();
+                for (MailReceiver mailReceiver : mailReceiverList) {
+                    if (Constant.SWITCH_OFF.equals(mailReceiver.getOnOff())) {
+                        continue;
+                    }
+                    String to = mailReceiver.getMail();
+                    String subject = task.getName();
+                    String text = "统计结果在附件中，请查收!";
+                    String attachmentFileName = task.getName() + ".xls";
+                    String attachmentFilePath;
+                    if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+                        attachmentFilePath = Constant.REPORT_FILE_PATH_WINDOWS + task.getFileName();
+                    } else {
+                        attachmentFilePath = Constant.REPORT_FILE_PATH_LINUX + task.getFileName();
+                    }
+                    MailSendLog mailSendLog = new MailSendLog(task.getId(), mailReceiver.getName(), mailReceiver.getMail());
+                    try {
+                        mailService.sendMimeMessage(to, subject, text, attachmentFileName, attachmentFilePath);
+                        mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_SUCCESS);
+                    } catch (Exception e) {
+                        mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_ERROR);
+                        e.printStackTrace();
+                    }
+                    mailSendLogService.saveMailSendLog(mailSendLog);
                 }
             }
 
