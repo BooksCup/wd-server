@@ -2,7 +2,6 @@ package com.bc.wd.server.controller;
 
 import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Task;
-import com.bc.wd.server.service.GoodsService;
 import com.bc.wd.server.service.TaskService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -26,9 +25,6 @@ public class TaskController {
 
     @Resource
     private TaskService taskService;
-
-    @Resource
-    private GoodsService goodsService;
 
     /**
      * 查询任务分页信息

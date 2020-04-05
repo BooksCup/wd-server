@@ -55,6 +55,36 @@ public class MailController {
     }
 
     /**
+     * 修改邮件接收者
+     *
+     * @param id 主键
+     * @return ResponseEntity<String>
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<MailReceiver> updateMailReceiver(
+            @PathVariable String id,
+            @RequestParam String name,
+            @RequestParam String mail,
+            @RequestParam String onOff) {
+        logger.info("[updateMailReceiver] id:" + id + ", name: " + name
+                + ", mail: " + mail + ", onOff: " + onOff);
+        ResponseEntity<MailReceiver> responseEntity;
+        MailReceiver mailReceiver = new MailReceiver(name, mail, onOff);
+        try {
+            mailReceiver.setId(id);
+            mailService.updateMailReceiver(mailReceiver);
+            responseEntity = new ResponseEntity<>(
+                    mailReceiver, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[updateMailReceiver] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(
+                    mailReceiver, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
      * 删除邮件接收人
      *
      * @param id 主键

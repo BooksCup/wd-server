@@ -48,6 +48,13 @@ public interface MailService {
     List<MailReceiver> getMailReceiverList();
 
     /**
+     * 修改邮件接收者
+     *
+     * @param mailReceiver 邮件接收者
+     */
+    void updateMailReceiver(MailReceiver mailReceiver);
+
+    /**
      * 删除邮件接收者
      *
      * @param id 主键

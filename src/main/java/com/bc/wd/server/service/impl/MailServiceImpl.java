@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -106,6 +107,22 @@ public class MailServiceImpl implements MailService {
     @Override
     public List<MailReceiver> getMailReceiverList() {
         return mongoTemplate.findAll(MailReceiver.class);
+    }
+
+    /**
+     * 修改邮件接收者
+     *
+     * @param mailReceiver 邮件接收者
+     */
+    @Override
+    public void updateMailReceiver(MailReceiver mailReceiver) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(mailReceiver.getId()));
+        Update update = new Update();
+        update.set("name", mailReceiver.getName());
+        update.set("mail", mailReceiver.getMail());
+        update.set("onOff", mailReceiver.getOnOff());
+        mongoTemplate.updateFirst(query, update, MailReceiver.class);
     }
 
     /**
