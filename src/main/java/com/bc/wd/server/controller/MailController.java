@@ -32,7 +32,7 @@ public class MailController {
      *
      * @param name 接收人姓名
      * @param mail 接收人邮箱
-     * @return ResponseEntity<String>
+     * @return ResponseEntity<MailReceiver>
      */
     @PostMapping("")
     public ResponseEntity<MailReceiver> saveMailReceiver(
@@ -47,7 +47,33 @@ public class MailController {
             mailService.saveMailReceiver(mailReceiver);
             responseEntity = new ResponseEntity<>(mailReceiver, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[saveMailReceiver] error: " + e.getMessage());
             responseEntity = new ResponseEntity<>(new MailReceiver(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
+     * 删除邮件接收人
+     *
+     * @param id 主键
+     * @return ResponseEntity<String>
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMailReceiver(
+            @PathVariable String id) {
+        logger.info("[deleteMailReceiver] id: " + id);
+        ResponseEntity<String> responseEntity;
+        try {
+            mailService.deleteMailReceiver(id);
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.DELETE_MAIL_RECEIVER_SUCCESS.getResponseCode(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[deleteMailReceiver] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.DELETE_MAIL_RECEIVER_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }

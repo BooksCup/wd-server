@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -105,6 +106,18 @@ public class MailServiceImpl implements MailService {
     @Override
     public List<MailReceiver> getMailReceiverList() {
         return mongoTemplate.findAll(MailReceiver.class);
+    }
+
+    /**
+     * 删除邮件接收者
+     *
+     * @param id 主键
+     */
+    @Override
+    public void deleteMailReceiver(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        mongoTemplate.remove(query, MailReceiver.class);
     }
 
     /**

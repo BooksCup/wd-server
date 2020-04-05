@@ -48,6 +48,13 @@ public interface MailService {
     List<MailReceiver> getMailReceiverList();
 
     /**
+     * 删除邮件接收者
+     *
+     * @param id 主键
+     */
+    void deleteMailReceiver(String id);
+
+    /**
      * 查询邮件接收者分页信息
      *
      * @param pageNum  当前分页数
