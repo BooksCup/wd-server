@@ -35,18 +35,19 @@ public class MailController {
      * @return ResponseEntity<String>
      */
     @PostMapping("")
-    public ResponseEntity<String> saveMailReceiver(
+    public ResponseEntity<MailReceiver> saveMailReceiver(
             @RequestParam String name,
-            @RequestParam String mail) {
-        ResponseEntity<String> responseEntity;
+            @RequestParam String mail,
+            @RequestParam String onOff) {
+        logger.info("[saveMailReceiver] name: " + name
+                + ", mail: " + mail + ", onOff: " + onOff);
+        ResponseEntity<MailReceiver> responseEntity;
         try {
-            MailReceiver mailReceiver = new MailReceiver(name, mail);
+            MailReceiver mailReceiver = new MailReceiver(name, mail, onOff);
             mailService.saveMailReceiver(mailReceiver);
-            responseEntity = new ResponseEntity<>(
-                    ResponseMsg.SAVE_MAIL_RECEIVER_SUCCESS.getResponseCode(), HttpStatus.OK);
+            responseEntity = new ResponseEntity<>(mailReceiver, HttpStatus.OK);
         } catch (Exception e) {
-            responseEntity = new ResponseEntity<>(
-                    ResponseMsg.SAVE_MAIL_RECEIVER_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+            responseEntity = new ResponseEntity<>(new MailReceiver(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }

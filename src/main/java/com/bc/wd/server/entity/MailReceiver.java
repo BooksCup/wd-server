@@ -27,6 +27,15 @@ public class MailReceiver {
         this.createTime = CommonUtil.now();
     }
 
+    public MailReceiver(String name, String mail, String onOff) {
+        this.id = CommonUtil.generateId();
+        this.name = name;
+        this.mail = mail;
+        this.onOff = onOff;
+        this.createTime = CommonUtil.now();
+    }
+
+
     public String getId() {
         return id;
     }
