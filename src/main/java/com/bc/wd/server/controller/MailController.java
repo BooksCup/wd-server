@@ -3,14 +3,13 @@ package com.bc.wd.server.controller;
 import com.bc.wd.server.entity.MailReceiver;
 import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.MailService;
+import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -48,6 +47,30 @@ public class MailController {
         } catch (Exception e) {
             responseEntity = new ResponseEntity<>(
                     ResponseMsg.SAVE_MAIL_RECEIVER_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
+     * 查询邮件接收人分页信息
+     *
+     * @param page  当前分页数
+     * @param limit 分页大小
+     * @return 邮件接收人分页信息
+     */
+    @ApiOperation(value = "查询邮件接收人分页信息", notes = "查询邮件接收人分页信息")
+    @GetMapping(value = "")
+    public ResponseEntity<PageInfo<MailReceiver>> getMailReceiverPageInfo(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        ResponseEntity<PageInfo<MailReceiver>> responseEntity;
+        try {
+            PageInfo<MailReceiver> mailReceiverPageInfo = mailService.getMailReceiverPageInfo(page, limit);
+            responseEntity = new ResponseEntity<>(mailReceiverPageInfo, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[getMailReceiverPageInfo] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new PageInfo<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
     }
