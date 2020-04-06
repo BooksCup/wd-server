@@ -1,7 +1,9 @@
 package com.bc.wd.server.controller;
 
 import com.bc.wd.server.entity.MailReceiver;
+import com.bc.wd.server.entity.MailSendLog;
 import com.bc.wd.server.enums.ResponseMsg;
+import com.bc.wd.server.service.MailSendLogService;
 import com.bc.wd.server.service.MailService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +28,9 @@ public class MailController {
 
     @Resource
     private MailService mailService;
+
+    @Resource
+    private MailSendLogService mailSendLogService;
 
     /**
      * 保存邮件接收人
@@ -132,6 +137,47 @@ public class MailController {
         return responseEntity;
     }
 
+    /**
+     * 查询邮件发送日志分页信息
+     *
+     * @param taskId 任务ID
+     * @param page   当前分页数
+     * @param limit  分页大小
+     * @return 邮件发送日志分页信息
+     */
+    @ApiOperation(value = "查询邮件发送日志分页信息", notes = "查询邮件发送日志分页信息")
+    @GetMapping(value = "/sendLog")
+    public ResponseEntity<PageInfo<MailSendLog>> getMailSendLogPageInfo(
+            @RequestParam String taskId,
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        ResponseEntity<PageInfo<MailSendLog>> responseEntity;
+        try {
+            PageInfo<MailSendLog> mailSendLogPageInfo = mailSendLogService.getMailSendLogPageInfo(taskId, page, limit);
+            responseEntity = new ResponseEntity<>(mailSendLogPageInfo, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[getMailSendLogPageInfo] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new PageInfo<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "重新发送邮件", notes = "重新发送邮件")
+    @PutMapping(value = "/sendLog/{logId}")
+    public ResponseEntity<MailSendLog> resendMail(
+            @PathVariable String logId) {
+        logger.info("[resendMail] logId:" + logId);
+        ResponseEntity<MailSendLog> responseEntity;
+        try {
+            responseEntity = new ResponseEntity<>(new MailSendLog(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[resendMail] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new MailSendLog(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
 
     /**
      * 发送简单邮件
