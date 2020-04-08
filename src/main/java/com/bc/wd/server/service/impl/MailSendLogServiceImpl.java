@@ -53,9 +53,22 @@ public class MailSendLogServiceImpl implements MailSendLogService {
         query.with(new Sort(Sort.Direction.DESC, "createTime"));
         long count = mongoTemplate.count(query, MailSendLog.class);
         List<MailSendLog> mailSendLogList = mongoTemplate.find(query, MailSendLog.class);
-        PageInfo<MailSendLog> pageInfo = new PageInfo();
+        PageInfo<MailSendLog> pageInfo = new PageInfo<>();
         pageInfo.setList(mailSendLogList);
         pageInfo.setTotal(count);
         return pageInfo;
+    }
+
+    /**
+     * 根据主键获取邮件发送日志
+     *
+     * @param id 主键
+     * @return 邮件发送日志
+     */
+    @Override
+    public MailSendLog getMailSendLogById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        return mongoTemplate.findOne(query, MailSendLog.class);
     }
 }

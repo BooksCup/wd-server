@@ -26,4 +26,12 @@ public interface MailSendLogService {
      * @return 邮件发送日志分页信息
      */
     PageInfo<MailSendLog> getMailSendLogPageInfo(String taskId, int pageNum, int pageSize);
+
+    /**
+     * 根据主键获取邮件发送日志
+     *
+     * @param id 主键
+     * @return 邮件发送日志
+     */
+    MailSendLog getMailSendLogById(String id);
 }

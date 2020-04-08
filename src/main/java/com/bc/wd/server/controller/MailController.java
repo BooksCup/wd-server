@@ -1,10 +1,13 @@
 package com.bc.wd.server.controller;
 
+import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.MailReceiver;
 import com.bc.wd.server.entity.MailSendLog;
+import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.MailSendLogService;
 import com.bc.wd.server.service.MailService;
+import com.bc.wd.server.service.TaskService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -31,6 +34,9 @@ public class MailController {
 
     @Resource
     private MailSendLogService mailSendLogService;
+
+    @Resource
+    private TaskService taskService;
 
     /**
      * 保存邮件接收人
@@ -163,6 +169,12 @@ public class MailController {
         return responseEntity;
     }
 
+    /**
+     * 重新发送邮件
+     *
+     * @param logId 发送日志主键
+     * @return ResponseEntity<MailSendLog>
+     */
     @ApiOperation(value = "重新发送邮件", notes = "重新发送邮件")
     @PutMapping(value = "/sendLog/{logId}")
     public ResponseEntity<MailSendLog> resendMail(
@@ -170,7 +182,27 @@ public class MailController {
         logger.info("[resendMail] logId:" + logId);
         ResponseEntity<MailSendLog> responseEntity;
         try {
-            responseEntity = new ResponseEntity<>(new MailSendLog(), HttpStatus.OK);
+            MailSendLog mailSendLog = mailSendLogService.getMailSendLogById(logId);
+            Task task = taskService.getTaskById(mailSendLog.getTaskId());
+            String osName = System.getProperties().getProperty("os.name");
+            String to = mailSendLog.getReceiverMail();
+            String subject = task.getName();
+            String text = "统计结果在附件中，请查收!";
+            String attachmentFileName = task.getName() + ".xls";
+            String attachmentFilePath;
+            if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+                attachmentFilePath = Constant.REPORT_FILE_PATH_WINDOWS + task.getFileName();
+            } else {
+                attachmentFilePath = Constant.REPORT_FILE_PATH_LINUX + task.getFileName();
+            }
+            try {
+                mailService.sendMimeMessage(to, subject, text, attachmentFileName, attachmentFilePath);
+                mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_ERROR);
+            }
+            responseEntity = new ResponseEntity<>(mailSendLog, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("[resendMail] error: " + e.getMessage());

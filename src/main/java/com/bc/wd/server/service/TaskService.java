@@ -41,4 +41,12 @@ public interface TaskService {
      * @return 待处理任务列表
      */
     List<Task> getTodoTaskList();
+
+    /**
+     * 根据主键获取任务
+     *
+     * @param id 主键
+     * @return 任务
+     */
+    Task getTaskById(String id);
 }

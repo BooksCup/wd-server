@@ -87,4 +87,17 @@ public class TaskServiceImpl implements TaskService {
         query.addCriteria(Criteria.where("status").is(Constant.TASK_STATUS_NEW));
         return mongoTemplate.find(query, Task.class);
     }
+
+    /**
+     * 根据主键获取任务
+     *
+     * @param id 主键
+     * @return 任务
+     */
+    @Override
+    public Task getTaskById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        return mongoTemplate.findOne(query, Task.class);
+    }
 }
