@@ -39,6 +39,7 @@ public class GoodsCheckResult {
     private boolean passFlag;
 
     private Integer outLierDataNum;
+    private Integer totalDataNum;
 
     public GoodsCheckResult() {
 
@@ -138,6 +139,14 @@ public class GoodsCheckResult {
         this.outLierDataNum = outLierDataNum;
     }
 
+    public Integer getTotalDataNum() {
+        return totalDataNum;
+    }
+
+    public void setTotalDataNum(Integer totalDataNum) {
+        this.totalDataNum = totalDataNum;
+    }
+
     @Override
     public String toString() {
         return "GoodsCheckResult{" +
@@ -151,6 +160,7 @@ public class GoodsCheckResult {
                 ", photoCheckFlag=" + photoCheckFlag +
                 ", passFlag=" + passFlag +
                 ", outLierDataNum=" + outLierDataNum +
+                ", totalDataNum=" + totalDataNum +
                 '}';
     }
 }

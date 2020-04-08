@@ -18,4 +18,13 @@
         where delete_status = '0'
         order by create_time desc
     </select>
+
+    <select id="getGoodsListByEnterpriseId" resultMap="Goods" parameterType="String">
+        select g.*, u.name as user_name
+        from t_goods g
+        left join t_user u on g.user_id = u.id
+        where g.delete_status = '0'
+        and g.enterprise_id = #{enterpriseId}
+        order by g.create_time desc
+    </select>
 </mapper>

@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -44,6 +45,9 @@ public class GoodsServiceImpl implements GoodsService {
     @Resource
     private MongoTemplate mongoTemplate;
 
+    @Value("${enterpriseId}")
+    private String enterpriseId;
+
     /**
      * 获取物品分页信息
      *
@@ -59,6 +63,21 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     /**
+     * 获取物品分页信息
+     *
+     * @param enterpriseId 企业ID
+     * @param pageNum      当前分页数
+     * @param pageSize     分页大小
+     * @return 物品分页信息
+     */
+    @Override
+    public PageInfo<Goods> getGoodsPageInfo(String enterpriseId, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Goods> goodsList = goodsMapper.getGoodsListByEnterpriseId(enterpriseId);
+        return new PageInfo<>(goodsList);
+    }
+
+    /**
      * 检测物品异常数据
      *
      * @param task 检测任务
@@ -66,15 +85,17 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public Task checkGoodsOutLierData(Task task) {
-        logger.info("[checkOutLierData] start...");
+        logger.info("[checkGoodsOutLierData] start...");
+        logger.info("enterpriseId: " + enterpriseId);
+        int totalDataNum = 0;
         int outLierDataNum = 0;
         long beginTimeStamp = System.currentTimeMillis();
         int pageSize = 20;
         // 从第一页开始，获取所有页数然后遍历
-        PageInfo<Goods> firstPage = getGoodsPageInfo(1, pageSize);
+        PageInfo<Goods> firstPage = getGoodsPageInfo(enterpriseId, 1, pageSize);
         int totalPage = firstPage.getPages();
         for (int pageNum = 2; pageNum <= totalPage; pageNum++) {
-            PageInfo<Goods> pageInfo = getGoodsPageInfo(pageNum, pageSize);
+            PageInfo<Goods> pageInfo = getGoodsPageInfo(enterpriseId, pageNum, pageSize);
             List<Goods> goodsList = pageInfo.getList();
             for (Goods goods : goodsList) {
                 GoodsCheckResult checkResult = new GoodsCheckResult(
@@ -86,19 +107,27 @@ public class GoodsServiceImpl implements GoodsService {
                 if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
                     checkResult.setPhotoCheckFlag(false);
                 }
-                if (!checkResult.checkPass()) {
+
+                if (checkResult.checkPass()) {
+                    // 检测通过
+                    checkResult.setPassFlag(true);
+                } else {
                     // 检测未通过
-                    logger.info("totalPage: " + totalPage + ", pageNum: "
-                            + pageNum + ", goodsId: " + goods.getId());
-                    logger.info("out lier data: " + checkResult);
+                    checkResult.setPassFlag(false);
                     outLierDataNum++;
-                    mongoTemplate.insert(checkResult);
                 }
+                logger.info("totalPage: " + totalPage + ", pageNum: "
+                        + pageNum + ", goodsId: " + goods.getId());
+                logger.info("out lier data: " + checkResult);
+                totalDataNum++;
+
+                mongoTemplate.insert(checkResult);
             }
         }
+        task.setTotalDataNum(totalDataNum);
         task.setOutLierDataNum(outLierDataNum);
         long endTimeStamp = System.currentTimeMillis();
-        logger.info("[checkOutLierData] finish. cost: " + (endTimeStamp - beginTimeStamp) + "ms.");
+        logger.info("[checkGoodsOutLierData] finish. cost: " + (endTimeStamp - beginTimeStamp) + "ms.");
         return task;
     }
 
@@ -121,29 +150,44 @@ public class GoodsServiceImpl implements GoodsService {
         Aggregation aggregation = Aggregation.newAggregation(
                 GoodsCheckResult.class,
                 Aggregation.match(Criteria.where("taskId").is(taskId)),
-                Aggregation.group("goodsCreator").count().as("outLierDataNum"),
-                Aggregation.sort(Sort.Direction.DESC, "outLierDataNum")
+                Aggregation.group("goodsCreator").count().as("totalDataNum"),
+                Aggregation.sort(Sort.Direction.DESC, "totalDataNum")
         );
 
         AggregationResults<GoodsCheckResult> aggregationResults = mongoTemplate.aggregate(aggregation, GoodsCheckResult.class, GoodsCheckResult.class);
         List<GoodsCheckResult> resultList = aggregationResults.getMappedResults();
         for (GoodsCheckResult result : resultList) {
-            logger.info("title: " + result.getId() + "(" + result.getOutLierDataNum() + ")");
-            String sheetName = result.getId() + "(" + result.getOutLierDataNum() + ")";
+            List<GoodsCheckResult> goodsCheckResultOutLierDataList = mongoTemplate.find(
+                    new Query()
+                            .addCriteria(Criteria.where("taskId").is(taskId))
+                            .addCriteria(Criteria.where("goodsCreator").is(result.getId()))
+                            .addCriteria(Criteria.where("passFlag").is(false)),
+                    GoodsCheckResult.class);
+
+            logger.info("title: " + result.getId() + "(" + goodsCheckResultOutLierDataList.size() + "|" + result.getTotalDataNum() + ")");
+            String sheetName = result.getId() + "(" + goodsCheckResultOutLierDataList.size() + "|" + result.getTotalDataNum() + ")";
 
             // 创建Sheet对象
             XSSFSheet sheet = createSheetAndTitleRowV1(workbook, sheetName);
-
-            List<GoodsCheckResult> goodsCheckResultList = mongoTemplate.find(
-                    new Query().addCriteria(Criteria.where("taskId").is(taskId)).
-                            addCriteria(Criteria.where("goodsCreator").is(result.getId())),
-                    GoodsCheckResult.class);
             int index = 1;
-            for (GoodsCheckResult goodsCheckResult : goodsCheckResultList) {
-                logger.info("goodsCheckResult: " + goodsCheckResult.toString());
-                fillContentCellV1(workbook, sheet, goodsCheckResult, index);
+            for (GoodsCheckResult goodsCheckResultOutLierData : goodsCheckResultOutLierDataList) {
+                logger.info("goodsCheckResultOutLierData: " + goodsCheckResultOutLierData.toString());
+                fillContentCellV1(workbook, sheet, goodsCheckResultOutLierData, index);
                 index++;
             }
+
+            List<GoodsCheckResult> goodsCheckResultNormalDataList = mongoTemplate.find(
+                    new Query()
+                            .addCriteria(Criteria.where("taskId").is(taskId))
+                            .addCriteria(Criteria.where("goodsCreator").is(result.getId()))
+                            .addCriteria(Criteria.where("passFlag").is(true)),
+                    GoodsCheckResult.class);
+            for (GoodsCheckResult goodsCheckResultNormalData : goodsCheckResultNormalDataList) {
+                logger.info("goodsCheckResultNormalData: " + goodsCheckResultNormalData.toString());
+                fillContentCellV1(workbook, sheet, goodsCheckResultNormalData, index);
+                index++;
+            }
+
         }
         FileOutputStream fileOutputStream;
         String osName = System.getProperties().getProperty("os.name");
@@ -176,15 +220,13 @@ public class GoodsServiceImpl implements GoodsService {
         // 设置每一列的宽度
         int goodsNoWidth = 15;
         int goodsNameWidth = 80;
-        int creatorWidth = 15;
         int createTimeWidth = 30;
         int reasonWidth = 30;
 
         sheet.setColumnWidth(0, goodsNoWidth * 256);
         sheet.setColumnWidth(1, goodsNameWidth * 256);
-        sheet.setColumnWidth(2, creatorWidth * 256);
-        sheet.setColumnWidth(3, createTimeWidth * 256);
-        sheet.setColumnWidth(4, reasonWidth * 256);
+        sheet.setColumnWidth(2, createTimeWidth * 256);
+        sheet.setColumnWidth(3, reasonWidth * 256);
         // 设置标题行
         XSSFRow titleRow = sheet.createRow(0);
 
@@ -212,15 +254,11 @@ public class GoodsServiceImpl implements GoodsService {
         titleCell2.setCellStyle(titleCellStyle);
         titleCell2.setCellValue("品名");
 
-        XSSFCell titleCell3 = titleRow.createCell(2);
-        titleCell3.setCellStyle(titleCellStyle);
-        titleCell3.setCellValue("创建人");
-
-        XSSFCell titleCell4 = titleRow.createCell(3);
+        XSSFCell titleCell4 = titleRow.createCell(2);
         titleCell4.setCellStyle(titleCellStyle);
         titleCell4.setCellValue("创建时间");
 
-        XSSFCell titleCell5 = titleRow.createCell(4);
+        XSSFCell titleCell5 = titleRow.createCell(3);
         titleCell5.setCellStyle(titleCellStyle);
         titleCell5.setCellValue("违规原因");
         return sheet;
@@ -246,14 +284,9 @@ public class GoodsServiceImpl implements GoodsService {
         XSSFCell contentCell2 = contentRow.createCell(1);
         contentCell2.setCellValue(goodsCheckResult.getGoodsName());
 
-        // 创建人
-        XSSFCell contentCell3 = contentRow.createCell(2);
-        contentCell3.setCellValue(goodsCheckResult.getGoodsCreator());
-
         // 创建时间
-        XSSFCell contentCell4 = contentRow.createCell(3);
-        contentCell4.setCellValue(goodsCheckResult.getCreateTime());
-
+        XSSFCell contentCell3 = contentRow.createCell(2);
+        contentCell3.setCellValue(goodsCheckResult.getCreateTime());
 
         // 设置标题单元格样式
         XSSFCellStyle reasonCellStyle = workbook.createCellStyle();
@@ -270,7 +303,7 @@ public class GoodsServiceImpl implements GoodsService {
         reasonCellStyle.setFont(reasonFont);
 
         // 违规字段
-        XSSFCell contentCell5 = contentRow.createCell(4);
+        XSSFCell contentCell4 = contentRow.createCell(3);
         StringBuffer reasonBuffer = new StringBuffer();
         if (!goodsCheckResult.isNameCheckFlag()) {
             reasonBuffer.append("品名未填,");
@@ -282,7 +315,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (reasonBuffer.length() > 1) {
             reasonBuffer.deleteCharAt(reasonBuffer.length() - 1);
         }
-        contentCell5.setCellStyle(reasonCellStyle);
-        contentCell5.setCellValue(reasonBuffer.toString());
+        contentCell4.setCellStyle(reasonCellStyle);
+        contentCell4.setCellValue(reasonBuffer.toString());
     }
 }

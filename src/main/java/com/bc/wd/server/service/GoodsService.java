@@ -20,6 +20,16 @@ public interface GoodsService {
     PageInfo<Goods> getGoodsPageInfo(int pageNum, int pageSize);
 
     /**
+     * 获取物品分页信息
+     *
+     * @param enterpriseId 企业ID
+     * @param pageNum      当前分页数
+     * @param pageSize     分页大小
+     * @return 物品分页信息
+     */
+    PageInfo<Goods> getGoodsPageInfo(String enterpriseId, int pageNum, int pageSize);
+
+    /**
      * 检测物品异常数据
      *
      * @param task 检测任务

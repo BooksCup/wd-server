@@ -70,6 +70,7 @@ public class TaskServiceImpl implements TaskService {
         query.addCriteria(Criteria.where("_id").is(task.getId()));
         Update update = new Update();
         update.set("outLierDataNum", task.getOutLierDataNum());
+        update.set("totalDataNum", task.getTotalDataNum());
         update.set("status", task.getStatus());
         update.set("costTime", task.getCostTime());
         update.set("fileName", task.getFileName());

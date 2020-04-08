@@ -16,6 +16,13 @@ public class Task {
     private String type;
     private String batchNo;
     private String name;
+    /**
+     * 总数据数量
+     */
+    private Integer totalDataNum;
+    /**
+     * 异常数据数量
+     */
     private Integer outLierDataNum;
     private String status;
     private String createTime;
@@ -72,6 +79,14 @@ public class Task {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getTotalDataNum() {
+        return totalDataNum;
+    }
+
+    public void setTotalDataNum(Integer totalDataNum) {
+        this.totalDataNum = totalDataNum;
     }
 
     public Integer getOutLierDataNum() {
