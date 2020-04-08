@@ -153,7 +153,7 @@ public class MailServiceImpl implements MailService {
         query.with(new Sort(Sort.Direction.DESC, "createTime"));
         long count = mongoTemplate.count(query, MailReceiver.class);
         List<MailReceiver> mailReceiverList = mongoTemplate.find(query, MailReceiver.class);
-        PageInfo<MailReceiver> pageInfo = new PageInfo();
+        PageInfo<MailReceiver> pageInfo = new PageInfo<>();
         pageInfo.setList(mailReceiverList);
         pageInfo.setTotal(count);
         return pageInfo;

@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
         query.with(new Sort(Sort.Direction.DESC, "createTime"));
         long count = mongoTemplate.count(query, Task.class);
         List<Task> taskList = mongoTemplate.find(query, Task.class);
-        PageInfo<Task> pageInfo = new PageInfo();
+        PageInfo<Task> pageInfo = new PageInfo<>();
         pageInfo.setList(taskList);
         pageInfo.setTotal(count);
         return pageInfo;

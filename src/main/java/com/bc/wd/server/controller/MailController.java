@@ -198,6 +198,10 @@ public class MailController {
             try {
                 mailService.sendMimeMessage(to, subject, text, attachmentFileName, attachmentFilePath);
                 mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_SUCCESS);
+
+                // 发送成功更新日志
+                mailSendLogService.updateMailSendLogStatus(mailSendLog);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 mailSendLog.setStatus(Constant.MAIL_SEND_STATUS_ERROR);

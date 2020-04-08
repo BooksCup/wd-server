@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -70,5 +71,19 @@ public class MailSendLogServiceImpl implements MailSendLogService {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
         return mongoTemplate.findOne(query, MailSendLog.class);
+    }
+
+    /**
+     * 修改邮件发送日志状态
+     *
+     * @param mailSendLog 邮件发送日志
+     */
+    @Override
+    public void updateMailSendLogStatus(MailSendLog mailSendLog) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(mailSendLog.getId()));
+        Update update = new Update();
+        update.set("status", mailSendLog.getStatus());
+        mongoTemplate.updateFirst(query, update, MailSendLog.class);
     }
 }

@@ -34,4 +34,11 @@ public interface MailSendLogService {
      * @return 邮件发送日志
      */
     MailSendLog getMailSendLogById(String id);
+
+    /**
+     * 修改邮件发送日志状态
+     *
+     * @param mailSendLog 邮件发送日志
+     */
+    void updateMailSendLogStatus(MailSendLog mailSendLog);
 }
