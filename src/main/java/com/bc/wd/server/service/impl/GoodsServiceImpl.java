@@ -110,7 +110,7 @@ public class GoodsServiceImpl implements GoodsService {
         // 从第一页开始，获取所有页数然后遍历
         PageInfo<Goods> firstPage = getGoodsPageInfo(enterpriseId, 1, pageSize);
         int totalPage = firstPage.getPages();
-        for (int pageNum = 2; pageNum <= totalPage; pageNum++) {
+        for (int pageNum = 1; pageNum <= totalPage; pageNum++) {
             PageInfo<Goods> pageInfo = getGoodsPageInfo(enterpriseId, pageNum, pageSize);
             List<Goods> goodsList = pageInfo.getList();
             for (Goods goods : goodsList) {
