@@ -33,6 +33,6 @@
         select g.*, u.name as user_name
         from t_goods g
         left join t_user u on g.user_id = u.id
-        where g.id = #{id}
+        where g.id = #{goodsId}
     </select>
 </mapper>

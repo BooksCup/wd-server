@@ -17,7 +17,13 @@ public interface GoodsMapper {
      */
     List<Goods> getGoodsList();
 
-    Goods getGoodsById(String id);
+    /**
+     * 根据物品主键获取物品
+     *
+     * @param goodsId 物品主键
+     * @return 物品
+     */
+    Goods getGoodsById(String goodsId);
 
     /**
      * 获取企业物品列表

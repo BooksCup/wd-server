@@ -52,29 +52,45 @@ public class GoodsController {
     /**
      * 查询物品详情
      *
-     * @param id 物品主键
+     * @param goodsId 物品主键
      * @return 物品分页信息
      */
     @ApiOperation(value = "查询物品详情", notes = "查询物品详情")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Goods> getGoodsById(@PathVariable String id) {
-        Goods goods = goodsService.getGoodsById(id);
-        return new ResponseEntity<>(goods, HttpStatus.OK);
+    @GetMapping(value = "/{goodsId}")
+    public ResponseEntity<Goods> getGoodsById(@PathVariable String goodsId) {
+        ResponseEntity<Goods> responseEntity;
+        try {
+            Goods goods = goodsService.getGoodsById(goodsId);
+            responseEntity = new ResponseEntity<>(goods, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[getGoodsById] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new Goods(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
     }
 
     /**
      * 查询物品违规原因
      *
-     * @param id 物品主键
+     * @param goodsId 物品主键
      * @return 物品违规原因
      */
     @ApiOperation(value = "查询物品违规原因", notes = "查询物品违规原因")
-    @GetMapping(value = "/{id}/goodsCheckResult")
-    public ResponseEntity<GoodsCheckResult> get(@PathVariable String id) {
-        Goods goods = goodsService.getGoodsById(id);
-        return new ResponseEntity<>(goodsService.checkGoodsAttr(goods, new GoodsCheckResult()), HttpStatus.OK);
+    @GetMapping(value = "/{goodsId}/goodsCheckResult")
+    public ResponseEntity<GoodsCheckResult> get(@PathVariable String goodsId) {
+        ResponseEntity<GoodsCheckResult> responseEntity;
+        try {
+            Goods goods = goodsService.getGoodsById(goodsId);
+            GoodsCheckResult goodsCheckResult = goodsService.checkGoodsAttr(goods, new GoodsCheckResult());
+            responseEntity = new ResponseEntity<>(goodsCheckResult, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[getGoodsById] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new GoodsCheckResult(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
     }
-
 
     /**
      * 检测物品异常数据

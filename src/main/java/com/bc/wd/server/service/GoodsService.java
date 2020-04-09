@@ -30,7 +30,13 @@ public interface GoodsService {
      */
     PageInfo<Goods> getGoodsPageInfo(String enterpriseId, int pageNum, int pageSize);
 
-    Goods getGoodsById(String id);
+    /**
+     * 根据物品主键获取物品
+     *
+     * @param goodsId 物品主键
+     * @return 物品
+     */
+    Goods getGoodsById(String goodsId);
 
     /**
      * 检测物品异常数据

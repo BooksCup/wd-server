@@ -81,9 +81,15 @@ public class GoodsServiceImpl implements GoodsService {
         return new PageInfo<>(goodsList);
     }
 
+    /**
+     * 根据物品主键获取物品
+     *
+     * @param goodsId 物品主键
+     * @return 物品
+     */
     @Override
-    public Goods getGoodsById(String id) {
-        return goodsMapper.getGoodsById(id);
+    public Goods getGoodsById(String goodsId) {
+        return goodsMapper.getGoodsById(goodsId);
     }
 
     /**
