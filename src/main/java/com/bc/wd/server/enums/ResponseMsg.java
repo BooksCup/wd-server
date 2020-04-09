@@ -14,7 +14,11 @@ public enum ResponseMsg {
     SEND_MAIL_MESSAGE_SUCCESS("SEND_MAIL_SUCCESS", "邮件发送成功"),
     SEND_MAIL_MESSAGE_ERROR("SEND_MAIL_ERROR", "邮件发送失败"),
     DELETE_MAIL_RECEIVER_SUCCESS("DELETE_MAIL_RECEIVER_SUCCESS", "删除邮件接收人成功"),
-    DELETE_MAIL_RECEIVER_ERROR("DELETE_MAIL_RECEIVER_ERROR", "删除邮件接收人失败"),;
+    DELETE_MAIL_RECEIVER_ERROR("DELETE_MAIL_RECEIVER_ERROR", "删除邮件接收人失败"),
+
+    GOODS_CHECK_NAME_IS_BLANK("GOODS_CHECK_NAME_IS_BLANK", "品名未填写"),
+    GOODS_CHECK_PHOTO_IS_BLANK("GOODS_CHECK_PHOTO_IS_BLANK", "图片未上传"),
+    GOODS_CHECK_ATTR_IS_BLANK("GOODS_CHECK_PHOTO_IS_BLANK", "属性未填写"),;
 
     ResponseMsg(String responseCode, String responseMessage) {
         this.responseCode = responseCode;

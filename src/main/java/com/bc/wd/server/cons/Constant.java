@@ -71,4 +71,9 @@ public class Constant {
      * 邮件发送状态-"失败"
      */
     public static final String MAIL_SEND_STATUS_ERROR = "1";
+
+    /**
+     * 空数组
+     */
+    public static final String EMPTY_ARRAY = "[]";
 }

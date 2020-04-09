@@ -5,6 +5,7 @@ import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.entity.GoodsCheckResult;
 import com.bc.wd.server.entity.Task;
+import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.mapper.GoodsMapper;
 import com.bc.wd.server.service.GoodsService;
 import com.bc.wd.server.util.CommonUtil;
@@ -357,7 +358,7 @@ public class GoodsServiceImpl implements GoodsService {
      * @return 检查结果
      */
     private GoodsCheckResult checkGoodsPhotos(Goods goods, GoodsCheckResult goodsCheckResult) {
-        if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
+        if (StringUtils.isEmpty(goods.getGoodsPhotos()) || Constant.EMPTY_ARRAY.equals(goods.getGoodsPhotos())) {
             goodsCheckResult.setPhotoCheckFlag(false);
         }
         return goodsCheckResult;
@@ -372,17 +373,16 @@ public class GoodsServiceImpl implements GoodsService {
      */
     private GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult) {
         Map<String, List<Map<String, String>>> attrMap;
-
         try {
             attrMap = JSON.parseObject(goods.getAttrList(), Map.class);
             if (null == attrMap) {
                 goodsCheckResult.setAttrCheckFlag(false);
-                goodsCheckResult.setAttrCheckReason("属性未填写,");
+                goodsCheckResult.setAttrCheckReason(ResponseMsg.GOODS_CHECK_ATTR_IS_BLANK.getResponseMessage() + ",");
                 attrMap = new HashMap<>(Constant.DEFAULT_HASH_MAP_CAPACITY);
             }
         } catch (Exception e) {
             goodsCheckResult.setAttrCheckFlag(false);
-            goodsCheckResult.setAttrCheckReason("属性未填写,");
+            goodsCheckResult.setAttrCheckReason(ResponseMsg.GOODS_CHECK_ATTR_IS_BLANK.getResponseMessage() + ",");
             e.printStackTrace();
             logger.error(e.getMessage());
             attrMap = new HashMap<>(Constant.DEFAULT_HASH_MAP_CAPACITY);
@@ -393,7 +393,7 @@ public class GoodsServiceImpl implements GoodsService {
                 for (Map.Entry<String, List<Map<String, String>>> entry : attrMap.entrySet()) {
                     if (StringUtils.isEmpty(entry.getKey())) {
                         goodsCheckResult.setAttrCheckFlag(false);
-                        goodsCheckResult.setAttrCheckReason("属性未填写,");
+                        goodsCheckResult.setAttrCheckReason(ResponseMsg.GOODS_CHECK_ATTR_IS_BLANK.getResponseMessage() + ",");
                     }
                 }
             } else {
@@ -429,7 +429,7 @@ public class GoodsServiceImpl implements GoodsService {
             }
         } else {
             goodsCheckResult.setAttrCheckFlag(false);
-            goodsCheckResult.setAttrCheckReason("属性未填写,");
+            goodsCheckResult.setAttrCheckReason(ResponseMsg.GOODS_CHECK_ATTR_IS_BLANK.getResponseMessage() + ",");
         }
 
         return goodsCheckResult;
@@ -445,11 +445,11 @@ public class GoodsServiceImpl implements GoodsService {
     public String getCheckInfo(GoodsCheckResult goodsCheckResult) {
         StringBuffer checkInfoBuffer = new StringBuffer();
         if (!goodsCheckResult.isNameCheckFlag()) {
-            checkInfoBuffer.append("品名未填,");
+            checkInfoBuffer.append(ResponseMsg.GOODS_CHECK_NAME_IS_BLANK.getResponseMessage()).append(",");
         }
 
         if (!goodsCheckResult.isPhotoCheckFlag()) {
-            checkInfoBuffer.append("图片未上传,");
+            checkInfoBuffer.append(ResponseMsg.GOODS_CHECK_PHOTO_IS_BLANK.getResponseMessage()).append(",");
         }
 
         if (!goodsCheckResult.isAttrCheckFlag()) {
