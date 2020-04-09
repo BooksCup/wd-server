@@ -40,6 +40,8 @@ public class GoodsCheckResult {
 
     private String attrCheckReason;
 
+    private String checkInfo;
+
     private boolean passFlag;
 
     private Integer outLierDataNum;
@@ -137,6 +139,14 @@ public class GoodsCheckResult {
 
     public void setAttrCheckReason(String attrCheckReason) {
         this.attrCheckReason = attrCheckReason;
+    }
+
+    public String getCheckInfo() {
+        return checkInfo;
+    }
+
+    public void setCheckInfo(String checkInfo) {
+        this.checkInfo = checkInfo;
     }
 
     public boolean isPassFlag() {

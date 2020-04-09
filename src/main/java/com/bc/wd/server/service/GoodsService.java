@@ -56,11 +56,19 @@ public interface GoodsService {
     String generateReportV1(String taskId) throws Exception;
 
     /**
-     * 检查物品属性
+     * 检查物品
      *
      * @param goods            物品
      * @param goodsCheckResult 检查结果
      * @return 检查结果
      */
-    GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult);
+    GoodsCheckResult checkGoods(Goods goods, GoodsCheckResult goodsCheckResult);
+
+    /**
+     * 获取检查结果(str)
+     *
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果(str)
+     */
+    String getCheckInfo(GoodsCheckResult goodsCheckResult);
 }

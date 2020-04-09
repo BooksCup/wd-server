@@ -116,14 +116,8 @@ public class GoodsServiceImpl implements GoodsService {
                 GoodsCheckResult checkResult = new GoodsCheckResult(
                         task.getId(),
                         goods.getGoodsNo(), goods.getGoodsName(), goods.getGoodsCreator(), goods.getCreateTime());
-                if (StringUtils.isEmpty(goods.getGoodsName())) {
-                    checkResult.setNameCheckFlag(false);
-                }
-                if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
-                    checkResult.setPhotoCheckFlag(false);
-                }
-
-                checkResult = checkGoodsAttr(goods, checkResult);
+                // 检查
+                checkResult = checkGoods(goods, checkResult);
 
                 if (checkResult.checkPass()) {
                     // 检测通过
@@ -321,24 +315,52 @@ public class GoodsServiceImpl implements GoodsService {
 
         // 违规字段
         XSSFCell contentCell4 = contentRow.createCell(3);
-        StringBuffer reasonBuffer = new StringBuffer();
-        if (!goodsCheckResult.isNameCheckFlag()) {
-            reasonBuffer.append("品名未填,");
-        }
-
-        if (!goodsCheckResult.isPhotoCheckFlag()) {
-            reasonBuffer.append("图片未上传,");
-        }
-
-        if (!goodsCheckResult.isAttrCheckFlag()) {
-            reasonBuffer.append(goodsCheckResult.getAttrCheckReason());
-        }
-
-        if (reasonBuffer.length() > 1) {
-            reasonBuffer.deleteCharAt(reasonBuffer.length() - 1);
-        }
+        String checkInfo = getCheckInfo(goodsCheckResult);
         contentCell4.setCellStyle(reasonCellStyle);
-        contentCell4.setCellValue(reasonBuffer.toString());
+        contentCell4.setCellValue(checkInfo);
+    }
+
+    /**
+     * 检查物品
+     *
+     * @param goods            物品
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果
+     */
+    @Override
+    public GoodsCheckResult checkGoods(Goods goods, GoodsCheckResult goodsCheckResult) {
+        goodsCheckResult = checkGoodsName(goods, goodsCheckResult);
+        goodsCheckResult = checkGoodsPhotos(goods, goodsCheckResult);
+        goodsCheckResult = checkGoodsAttr(goods, goodsCheckResult);
+        return goodsCheckResult;
+    }
+
+    /**
+     * 检查物品品名
+     *
+     * @param goods            物品
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果
+     */
+    private GoodsCheckResult checkGoodsName(Goods goods, GoodsCheckResult goodsCheckResult) {
+        if (StringUtils.isEmpty(goods.getGoodsName())) {
+            goodsCheckResult.setNameCheckFlag(false);
+        }
+        return goodsCheckResult;
+    }
+
+    /**
+     * 检查物品图片
+     *
+     * @param goods            物品
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果
+     */
+    private GoodsCheckResult checkGoodsPhotos(Goods goods, GoodsCheckResult goodsCheckResult) {
+        if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
+            goodsCheckResult.setPhotoCheckFlag(false);
+        }
+        return goodsCheckResult;
     }
 
     /**
@@ -348,8 +370,7 @@ public class GoodsServiceImpl implements GoodsService {
      * @param goodsCheckResult 检查结果
      * @return 检查结果
      */
-    @Override
-    public GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult) {
+    private GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult) {
         Map<String, List<Map<String, String>>> attrMap;
 
         try {
@@ -412,5 +433,31 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         return goodsCheckResult;
+    }
+
+    /**
+     * 获取检查结果(str)
+     *
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果(str)
+     */
+    @Override
+    public String getCheckInfo(GoodsCheckResult goodsCheckResult) {
+        StringBuffer checkInfoBuffer = new StringBuffer();
+        if (!goodsCheckResult.isNameCheckFlag()) {
+            checkInfoBuffer.append("品名未填,");
+        }
+
+        if (!goodsCheckResult.isPhotoCheckFlag()) {
+            checkInfoBuffer.append("图片未上传,");
+        }
+
+        if (!goodsCheckResult.isAttrCheckFlag()) {
+            checkInfoBuffer.append(goodsCheckResult.getAttrCheckReason());
+        }
+        if (checkInfoBuffer.length() > 1) {
+            checkInfoBuffer.deleteCharAt(checkInfoBuffer.length() - 1);
+        }
+        return checkInfoBuffer.toString();
     }
 }

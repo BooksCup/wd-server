@@ -82,7 +82,8 @@ public class GoodsController {
         ResponseEntity<GoodsCheckResult> responseEntity;
         try {
             Goods goods = goodsService.getGoodsById(goodsId);
-            GoodsCheckResult goodsCheckResult = goodsService.checkGoodsAttr(goods, new GoodsCheckResult());
+            GoodsCheckResult goodsCheckResult = goodsService.checkGoods(goods, new GoodsCheckResult());
+            goodsCheckResult.setCheckInfo(goodsService.getCheckInfo(goodsCheckResult));
             responseEntity = new ResponseEntity<>(goodsCheckResult, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
