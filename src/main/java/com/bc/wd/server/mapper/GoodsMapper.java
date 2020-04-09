@@ -17,6 +17,8 @@ public interface GoodsMapper {
      */
     List<Goods> getGoodsList();
 
+    Goods getGoodsById(String id);
+
     /**
      * 获取企业物品列表
      *

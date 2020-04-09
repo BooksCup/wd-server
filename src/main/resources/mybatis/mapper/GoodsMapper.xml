@@ -8,6 +8,7 @@
         <result column="goods_photos" property="goodsPhotos" jdbcType="VARCHAR"/>
         <result column="goods_no" property="goodsNo" jdbcType="VARCHAR"/>
         <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="attr_list" property="attrList" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -26,5 +27,12 @@
         where g.delete_status = '0'
         and g.enterprise_id = #{enterpriseId}
         order by g.create_time desc
+    </select>
+
+    <select id="getGoodsById" resultMap="Goods" parameterType="String">
+        select g.*, u.name as user_name
+        from t_goods g
+        left join t_user u on g.user_id = u.id
+        where g.id = #{id}
     </select>
 </mapper>

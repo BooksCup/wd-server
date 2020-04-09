@@ -1,6 +1,7 @@
 package com.bc.wd.server.service;
 
 import com.bc.wd.server.entity.Goods;
+import com.bc.wd.server.entity.GoodsCheckResult;
 import com.bc.wd.server.entity.Task;
 import com.github.pagehelper.PageInfo;
 
@@ -29,6 +30,8 @@ public interface GoodsService {
      */
     PageInfo<Goods> getGoodsPageInfo(String enterpriseId, int pageNum, int pageSize);
 
+    Goods getGoodsById(String id);
+
     /**
      * 检测物品异常数据
      *
@@ -45,4 +48,13 @@ public interface GoodsService {
      * @throws Exception 异常
      */
     String generateReportV1(String taskId) throws Exception;
+
+    /**
+     * 检查物品属性
+     *
+     * @param goods            物品
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果
+     */
+    GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult);
 }

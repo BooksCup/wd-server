@@ -36,6 +36,10 @@ public class GoodsCheckResult {
 
     private boolean photoCheckFlag = true;
 
+    private boolean attrCheckFlag = true;
+
+    private String attrCheckReason;
+
     private boolean passFlag;
 
     private Integer outLierDataNum;
@@ -119,6 +123,22 @@ public class GoodsCheckResult {
         this.photoCheckFlag = photoCheckFlag;
     }
 
+    public boolean isAttrCheckFlag() {
+        return attrCheckFlag;
+    }
+
+    public void setAttrCheckFlag(boolean attrCheckFlag) {
+        this.attrCheckFlag = attrCheckFlag;
+    }
+
+    public String getAttrCheckReason() {
+        return attrCheckReason;
+    }
+
+    public void setAttrCheckReason(String attrCheckReason) {
+        this.attrCheckReason = attrCheckReason;
+    }
+
     public boolean isPassFlag() {
         return passFlag;
     }
@@ -128,7 +148,9 @@ public class GoodsCheckResult {
     }
 
     public boolean checkPass() {
-        return this.nameCheckFlag && this.photoCheckFlag;
+        return this.nameCheckFlag
+                && this.photoCheckFlag
+                && this.attrCheckFlag;
     }
 
     public Integer getOutLierDataNum() {
@@ -158,6 +180,8 @@ public class GoodsCheckResult {
                 ", createTime='" + createTime + '\'' +
                 ", nameCheckFlag=" + nameCheckFlag +
                 ", photoCheckFlag=" + photoCheckFlag +
+                ", attrCheckFlag=" + attrCheckFlag +
+                ", attrCheckReason='" + attrCheckReason + '\'' +
                 ", passFlag=" + passFlag +
                 ", outLierDataNum=" + outLierDataNum +
                 ", totalDataNum=" + totalDataNum +

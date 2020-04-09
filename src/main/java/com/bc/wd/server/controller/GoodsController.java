@@ -2,6 +2,7 @@ package com.bc.wd.server.controller;
 
 import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Goods;
+import com.bc.wd.server.entity.GoodsCheckResult;
 import com.bc.wd.server.entity.Task;
 import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.GoodsService;
@@ -47,6 +48,33 @@ public class GoodsController {
         PageInfo<Goods> goodsPageInfo = goodsService.getGoodsPageInfo(pageNum, pageSize);
         return new ResponseEntity<>(goodsPageInfo, HttpStatus.OK);
     }
+
+    /**
+     * 查询物品详情
+     *
+     * @param id 物品主键
+     * @return 物品分页信息
+     */
+    @ApiOperation(value = "查询物品详情", notes = "查询物品详情")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Goods> getGoodsById(@PathVariable String id) {
+        Goods goods = goodsService.getGoodsById(id);
+        return new ResponseEntity<>(goods, HttpStatus.OK);
+    }
+
+    /**
+     * 查询物品违规原因
+     *
+     * @param id 物品主键
+     * @return 物品违规原因
+     */
+    @ApiOperation(value = "查询物品违规原因", notes = "查询物品违规原因")
+    @GetMapping(value = "/{id}/goodsCheckResult")
+    public ResponseEntity<GoodsCheckResult> get(@PathVariable String id) {
+        Goods goods = goodsService.getGoodsById(id);
+        return new ResponseEntity<>(goodsService.checkGoodsAttr(goods, new GoodsCheckResult()), HttpStatus.OK);
+    }
+
 
     /**
      * 检测物品异常数据

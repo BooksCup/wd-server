@@ -1,5 +1,6 @@
 package com.bc.wd.server.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.entity.GoodsCheckResult;
@@ -9,7 +10,6 @@ import com.bc.wd.server.service.GoodsService;
 import com.bc.wd.server.util.CommonUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -24,10 +24,14 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 物品
@@ -77,6 +81,11 @@ public class GoodsServiceImpl implements GoodsService {
         return new PageInfo<>(goodsList);
     }
 
+    @Override
+    public Goods getGoodsById(String id) {
+        return goodsMapper.getGoodsById(id);
+    }
+
     /**
      * 检测物品异常数据
      *
@@ -107,6 +116,8 @@ public class GoodsServiceImpl implements GoodsService {
                 if (StringUtils.isEmpty(goods.getGoodsPhotos()) || "[]".equals(goods.getGoodsPhotos())) {
                     checkResult.setPhotoCheckFlag(false);
                 }
+
+                checkResult = checkGoodsAttr(goods, checkResult);
 
                 if (checkResult.checkPass()) {
                     // 检测通过
@@ -219,9 +230,9 @@ public class GoodsServiceImpl implements GoodsService {
 
         // 设置每一列的宽度
         int goodsNoWidth = 15;
-        int goodsNameWidth = 80;
+        int goodsNameWidth = 40;
         int createTimeWidth = 30;
-        int reasonWidth = 30;
+        int reasonWidth = 90;
 
         sheet.setColumnWidth(0, goodsNoWidth * 256);
         sheet.setColumnWidth(1, goodsNameWidth * 256);
@@ -312,10 +323,88 @@ public class GoodsServiceImpl implements GoodsService {
         if (!goodsCheckResult.isPhotoCheckFlag()) {
             reasonBuffer.append("图片未上传,");
         }
+
+        if (!goodsCheckResult.isAttrCheckFlag()) {
+            reasonBuffer.append(goodsCheckResult.getAttrCheckReason());
+        }
+
         if (reasonBuffer.length() > 1) {
             reasonBuffer.deleteCharAt(reasonBuffer.length() - 1);
         }
         contentCell4.setCellStyle(reasonCellStyle);
         contentCell4.setCellValue(reasonBuffer.toString());
+    }
+
+    /**
+     * 检查物品属性
+     *
+     * @param goods            物品
+     * @param goodsCheckResult 检查结果
+     * @return 检查结果
+     */
+    @Override
+    public GoodsCheckResult checkGoodsAttr(Goods goods, GoodsCheckResult goodsCheckResult) {
+        Map<String, List<Map<String, String>>> attrMap;
+
+        try {
+            attrMap = JSON.parseObject(goods.getAttrList(), Map.class);
+            if (null == attrMap) {
+                goodsCheckResult.setAttrCheckFlag(false);
+                goodsCheckResult.setAttrCheckReason("属性未填写,");
+                attrMap = new HashMap<>(Constant.DEFAULT_HASH_MAP_CAPACITY);
+            }
+        } catch (Exception e) {
+            goodsCheckResult.setAttrCheckFlag(false);
+            goodsCheckResult.setAttrCheckReason("属性未填写,");
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            attrMap = new HashMap<>(Constant.DEFAULT_HASH_MAP_CAPACITY);
+        }
+
+        if (attrMap.size() >= 1) {
+            if (attrMap.size() == 1) {
+                for (Map.Entry<String, List<Map<String, String>>> entry : attrMap.entrySet()) {
+                    if (StringUtils.isEmpty(entry.getKey())) {
+                        goodsCheckResult.setAttrCheckFlag(false);
+                        goodsCheckResult.setAttrCheckReason("属性未填写,");
+                    }
+                }
+            } else {
+                StringBuffer attrCheckReasonBuffer = new StringBuffer();
+                for (Map.Entry<String, List<Map<String, String>>> entry : attrMap.entrySet()) {
+                    List<Map<String, String>> attrValueList = entry.getValue();
+                    if (CollectionUtils.isEmpty(attrValueList)) {
+                        goodsCheckResult.setAttrCheckFlag(false);
+                        attrCheckReasonBuffer.append("属性[" + entry.getKey() + "]未填写任何内容,");
+                    } else {
+                        for (Map<String, String> attrValue : attrValueList) {
+                            for (Map.Entry<String, String> attrValueEntry : attrValue.entrySet()) {
+                                String value;
+                                try {
+                                    value = attrValueEntry.getValue();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    logger.error("goodsNo: " + goods.getGoodsNo() + " error: " + e.getMessage());
+                                    value = "";
+                                }
+                                if ("name".equals(attrValueEntry.getKey()) &&
+                                        StringUtils.isEmpty(value) && !StringUtils.isEmpty(entry.getKey())) {
+                                    goodsCheckResult.setAttrCheckFlag(false);
+                                    attrCheckReasonBuffer.append("属性[" + entry.getKey() + "]未填写任何内容,");
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!goodsCheckResult.isAttrCheckFlag()) {
+                    goodsCheckResult.setAttrCheckReason(attrCheckReasonBuffer.toString());
+                }
+            }
+        } else {
+            goodsCheckResult.setAttrCheckFlag(false);
+            goodsCheckResult.setAttrCheckReason("属性未填写,");
+        }
+
+        return goodsCheckResult;
     }
 }

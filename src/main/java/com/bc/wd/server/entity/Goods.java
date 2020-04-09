@@ -11,6 +11,7 @@ public class Goods {
     private String goodsNo;
     private String goodsName;
     private String goodsCreator;
+    private String attrList;
     private String createTime;
 
     public String getId() {
@@ -51,6 +52,14 @@ public class Goods {
 
     public void setGoodsCreator(String goodsCreator) {
         this.goodsCreator = goodsCreator;
+    }
+
+    public String getAttrList() {
+        return attrList;
+    }
+
+    public void setAttrList(String attrList) {
+        this.attrList = attrList;
     }
 
     public String getCreateTime() {
