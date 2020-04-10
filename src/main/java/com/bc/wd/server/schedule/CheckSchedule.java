@@ -20,15 +20,15 @@ import java.time.LocalTime;
 import java.util.List;
 
 /**
- * 定时检测任务
+ * 定时检测
  *
  * @author zhou
  */
 @Configuration
 @EnableScheduling
-public class CheckScheduleTask {
+public class CheckSchedule {
 
-    private static final Logger logger = LoggerFactory.getLogger(CheckScheduleTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckSchedule.class);
 
     @Resource
     private TaskService taskService;
@@ -44,13 +44,12 @@ public class CheckScheduleTask {
 
     @Scheduled(cron = "0/20 * * * * ?")
     private void execute() {
-        String osName = System.getProperties().getProperty("os.name");
-//        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
-//            return;
-//        }
-        logger.info("check task start...");
+        logger.info("CheckSchedule start...");
         logger.info("time: " + LocalTime.now());
-
+        String osName = System.getProperties().getProperty("os.name");
+        if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
+            return;
+        }
         List<Task> todoTaskList = taskService.getTodoTaskList();
         for (Task task : todoTaskList) {
             long beginTimeStamp = System.currentTimeMillis();
