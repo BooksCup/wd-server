@@ -39,6 +39,14 @@ public interface GoodsService {
     Goods getGoodsById(String goodsId);
 
     /**
+     * 根据物料号获取物品
+     *
+     * @param goodsNo 物料号
+     * @return 物品
+     */
+    Goods getGoodsByGoodsNo(String goodsNo);
+
+    /**
      * 检测物品异常数据
      *
      * @param task 检测任务

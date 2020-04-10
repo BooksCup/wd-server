@@ -26,6 +26,14 @@ public interface GoodsMapper {
     Goods getGoodsById(String goodsId);
 
     /**
+     * 根据物料号获取物品
+     *
+     * @param goodsNo 物料号
+     * @return 物品
+     */
+    List<Goods> getGoodsByGoodsNo(String goodsNo);
+
+    /**
      * 获取企业物品列表
      *
      * @param enterpriseId 企业ID

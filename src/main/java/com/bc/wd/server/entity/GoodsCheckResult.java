@@ -23,6 +23,16 @@ public class GoodsCheckResult {
     private String goodsName;
 
     /**
+     * 图片
+     */
+    private String goodsPhoto;
+
+    /**
+     * 物品属性
+     */
+    private String goodsAttr;
+
+    /**
      * 创建者
      */
     private String goodsCreator;
@@ -61,6 +71,19 @@ public class GoodsCheckResult {
         this.createTime = createTime;
     }
 
+    public GoodsCheckResult(String taskId, String goodsNo, String goodsName,
+                            String goodsPhoto, String goodsCreator, String goodsAttr, String createTime) {
+        this.id = CommonUtil.generateId();
+        this.taskId = taskId;
+        this.goodsNo = goodsNo;
+        this.goodsName = goodsName;
+        this.goodsPhoto = goodsPhoto;
+        this.goodsCreator = goodsCreator;
+        this.goodsAttr = goodsAttr;
+        this.createTime = createTime;
+    }
+
+
     public String getId() {
         return id;
     }
@@ -91,6 +114,22 @@ public class GoodsCheckResult {
 
     public void setGoodsName(String goodsName) {
         this.goodsName = goodsName;
+    }
+
+    public String getGoodsPhoto() {
+        return goodsPhoto;
+    }
+
+    public void setGoodsPhoto(String goodsPhoto) {
+        this.goodsPhoto = goodsPhoto;
+    }
+
+    public String getGoodsAttr() {
+        return goodsAttr;
+    }
+
+    public void setGoodsAttr(String goodsAttr) {
+        this.goodsAttr = goodsAttr;
     }
 
     public String getGoodsCreator() {

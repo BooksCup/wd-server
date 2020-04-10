@@ -78,7 +78,7 @@ public class GoodsController {
      */
     @ApiOperation(value = "查询物品违规原因", notes = "查询物品违规原因")
     @GetMapping(value = "/{goodsId}/goodsCheckResult")
-    public ResponseEntity<GoodsCheckResult> get(@PathVariable String goodsId) {
+    public ResponseEntity<GoodsCheckResult> checkGoods(@PathVariable String goodsId) {
         ResponseEntity<GoodsCheckResult> responseEntity;
         try {
             Goods goods = goodsService.getGoodsById(goodsId);
@@ -87,7 +87,7 @@ public class GoodsController {
             responseEntity = new ResponseEntity<>(goodsCheckResult, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("[getGoodsById] error: " + e.getMessage());
+            logger.error("[checkGoods] error: " + e.getMessage());
             responseEntity = new ResponseEntity<>(new GoodsCheckResult(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;

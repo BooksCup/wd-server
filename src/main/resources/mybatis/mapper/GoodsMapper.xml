@@ -35,4 +35,11 @@
         left join t_user u on g.user_id = u.id
         where g.id = #{goodsId}
     </select>
+
+    <select id="getGoodsByGoodsNo" resultMap="Goods" parameterType="String">
+        select g.*, u.name as user_name
+        from t_goods g
+        left join t_user u on g.user_id = u.id
+        where g.goods_no = #{goodsId}
+    </select>
 </mapper>

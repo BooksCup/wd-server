@@ -94,6 +94,22 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     /**
+     * 根据物料号获取物品
+     *
+     * @param goodsNo 物料号
+     * @return 物品
+     */
+    @Override
+    public Goods getGoodsByGoodsNo(String goodsNo) {
+        List<Goods> goodsList = goodsMapper.getGoodsByGoodsNo(goodsNo);
+        if (CollectionUtils.isEmpty(goodsList)) {
+            return new Goods();
+        } else {
+            return goodsList.get(0);
+        }
+    }
+
+    /**
      * 检测物品异常数据
      *
      * @param task 检测任务
