@@ -76,4 +76,14 @@ public class Constant {
      * 空数组
      */
     public static final String EMPTY_ARRAY = "[]";
+
+    /**
+     * http协议
+     */
+    public static final String PROTOCOL_HTTP = "http:";
+
+    /**
+     * https协议
+     */
+    public static final String PROTOCOL_HTTPS = "https:";
 }

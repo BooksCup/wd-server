@@ -2,6 +2,8 @@ package com.bc.wd.server.entity;
 
 import com.bc.wd.server.util.CommonUtil;
 
+import java.util.List;
+
 /**
  * 物品检查结果
  *
@@ -28,9 +30,19 @@ public class GoodsCheckResult {
     private String goodsPhoto;
 
     /**
+     * 图片list
+     */
+    private List<String> goodsPhotoList;
+
+    /**
      * 物品属性
      */
     private String goodsAttr;
+
+    /**
+     * 物品属性list
+     */
+    private List<GoodsAttr> goodsAttrList;
 
     /**
      * 创建者
@@ -51,6 +63,8 @@ public class GoodsCheckResult {
     private String attrCheckReason;
 
     private String checkInfo;
+
+    private List<String> checkInfoList;
 
     private boolean passFlag;
 
@@ -124,12 +138,28 @@ public class GoodsCheckResult {
         this.goodsPhoto = goodsPhoto;
     }
 
+    public List<String> getGoodsPhotoList() {
+        return goodsPhotoList;
+    }
+
+    public void setGoodsPhotoList(List<String> goodsPhotoList) {
+        this.goodsPhotoList = goodsPhotoList;
+    }
+
     public String getGoodsAttr() {
         return goodsAttr;
     }
 
     public void setGoodsAttr(String goodsAttr) {
         this.goodsAttr = goodsAttr;
+    }
+
+    public List<GoodsAttr> getGoodsAttrList() {
+        return goodsAttrList;
+    }
+
+    public void setGoodsAttrList(List<GoodsAttr> goodsAttrList) {
+        this.goodsAttrList = goodsAttrList;
     }
 
     public String getGoodsCreator() {
@@ -186,6 +216,14 @@ public class GoodsCheckResult {
 
     public void setCheckInfo(String checkInfo) {
         this.checkInfo = checkInfo;
+    }
+
+    public List<String> getCheckInfoList() {
+        return checkInfoList;
+    }
+
+    public void setCheckInfoList(List<String> checkInfoList) {
+        this.checkInfoList = checkInfoList;
     }
 
     public boolean isPassFlag() {
