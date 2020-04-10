@@ -40,6 +40,7 @@
         select g.*, u.name as user_name
         from t_goods g
         left join t_user u on g.user_id = u.id
-        where g.goods_no = #{goodsId}
+        where g.delete_status = '0'
+        and g.goods_no = #{goodsId}
     </select>
 </mapper>

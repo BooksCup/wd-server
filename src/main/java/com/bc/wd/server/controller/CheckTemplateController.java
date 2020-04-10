@@ -2,12 +2,14 @@ package com.bc.wd.server.controller;
 
 import com.bc.wd.server.entity.Goods;
 import com.bc.wd.server.entity.GoodsCheckResult;
+import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.GoodsService;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -48,6 +50,11 @@ public class CheckTemplateController {
                     goods.getGoodsCreator(),
                     goods.getAttrList(),
                     goods.getCreateTime());
+            if (StringUtils.isEmpty(goods.getId())) {
+                // 物品不存在
+                goodsCheckResult.setCheckInfo(ResponseMsg.GOODS_CHECK_NOT_EXISTS.getResponseMessage());
+                return new ResponseEntity<>(goodsCheckResult, HttpStatus.OK);
+            }
 
             goodsCheckResult = goodsService.checkGoods(goods, goodsCheckResult);
             goodsCheckResult.setCheckInfo(goodsService.getCheckInfo(goodsCheckResult));
