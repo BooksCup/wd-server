@@ -59,7 +59,11 @@ public class CheckTemplateController {
                     goods.getCreateTime());
             if (StringUtils.isEmpty(goods.getId())) {
                 // 物品不存在
-                goodsCheckResult.setCheckInfo(ResponseMsg.GOODS_CHECK_NOT_EXISTS.getResponseMessage());
+                String checkInfo = ResponseMsg.GOODS_CHECK_NOT_EXISTS.getResponseMessage();
+                List<String> checkInfoList = new ArrayList<>();
+                checkInfoList.add(checkInfo);
+                goodsCheckResult.setCheckInfo(checkInfo);
+                goodsCheckResult.setCheckInfoList(checkInfoList);
                 return new ResponseEntity<>(goodsCheckResult, HttpStatus.OK);
             }
 
