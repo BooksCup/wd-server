@@ -24,9 +24,18 @@ public class FileItemController {
     @Resource
     FileItemService fileItemService;
 
+    /**
+     * 创建文件文档
+     *
+     * @param fileName 文件名
+     * @param filePath 文件路径
+     * @param diskName 磁盘名
+     * @param fileSize 文件大小
+     * @return ResponseEntity<String>
+     */
     @ApiOperation(value = "创建文件文档", notes = "创建文件文档")
     @PostMapping(value = "")
-    public ResponseEntity<String> saveFileItem(
+    public ResponseEntity<String> createFileItemDocument(
             @RequestParam String fileName,
             @RequestParam String filePath,
             @RequestParam String diskName,
