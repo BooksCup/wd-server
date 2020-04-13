@@ -86,4 +86,14 @@ public class Constant {
      * https协议
      */
     public static final String PROTOCOL_HTTPS = "https:";
+
+    /**
+     * 排序-升序
+     */
+    public static final String SORT_DIRECTION_ASC = "asc";
+
+    /**
+     * 排序-倒序
+     */
+    public static final String SORT_DIRECTION_DESC = "desc";
 }

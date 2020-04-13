@@ -23,6 +23,11 @@ public enum ResponseMsg {
 
     FILE_ITEM_DOCUMENT_ADD_SUCCESS("FILE_ITEM_DOCUMENT_ADD_SUCCESS", "文件文档保存成功"),
     FILE_ITEM_DOCUMENT_ADD_ERROR("FILE_ITEM_DOCUMENT_ADD_ERROR", "文件文档保存失败"),
+
+    FILE_ITEM_DOCUMENT_DELETE_SUCCESS("FILE_ITEM_DOCUMENT_DELETE_SUCCESS", "文件文档删除成功"),
+    FILE_ITEM_DOCUMENT_DELETE_ERROR("FILE_ITEM_DOCUMENT_DELETE_ERROR", "文件文档删除失败"),
+
+    PATH_IS_ILLEGAL("PATH_IS_ILLEGAL", "path应该是个文件路径"),
     ;
 
     ResponseMsg(String responseCode, String responseMessage) {
