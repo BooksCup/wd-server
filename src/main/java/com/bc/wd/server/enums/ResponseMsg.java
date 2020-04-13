@@ -19,7 +19,11 @@ public enum ResponseMsg {
     GOODS_CHECK_NOT_EXISTS("GOODS_CHECK_NOT_EXISTS", "物品不存在"),
     GOODS_CHECK_NAME_IS_BLANK("GOODS_CHECK_NAME_IS_BLANK", "品名未填写"),
     GOODS_CHECK_PHOTO_IS_BLANK("GOODS_CHECK_PHOTO_IS_BLANK", "图片未上传"),
-    GOODS_CHECK_ATTR_IS_BLANK("GOODS_CHECK_PHOTO_IS_BLANK", "属性未填写"),;
+    GOODS_CHECK_ATTR_IS_BLANK("GOODS_CHECK_PHOTO_IS_BLANK", "属性未填写"),
+
+    FILE_ITEM_DOCUMENT_ADD_SUCCESS("FILE_ITEM_DOCUMENT_ADD_SUCCESS", "文件文档保存成功"),
+    FILE_ITEM_DOCUMENT_ADD_ERROR("FILE_ITEM_DOCUMENT_ADD_ERROR", "文件文档保存失败"),
+    ;
 
     ResponseMsg(String responseCode, String responseMessage) {
         this.responseCode = responseCode;
