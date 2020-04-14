@@ -4,23 +4,38 @@ import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.FileItem;
 import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.FileItemService;
+import com.bc.wd.server.util.FileUtil;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+/**
+ * 文件
+ *
+ * @author zhou
+ */
 @RestController
 @RequestMapping("/fileItems")
 public class FileItemController {
@@ -52,13 +67,80 @@ public class FileItemController {
         try {
             fileItemService.save(fileItem);
             responseEntity = new ResponseEntity<>(
-                    ResponseMsg.FILE_ITEM_DOCUMENT_ADD_SUCCESS.getResponseCode(), HttpStatus.OK);
+                    ResponseMsg.FILE_ITEM_DOCUMENT_CREATE_SUCCESS.getResponseCode(), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
             responseEntity = new ResponseEntity<>(
-                    ResponseMsg.FILE_ITEM_DOCUMENT_ADD_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+                    ResponseMsg.FILE_ITEM_DOCUMENT_CREATE_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return responseEntity;
+    }
+
+    /**
+     * 批量创建文件文档
+     *
+     * @param path      文件路径
+     * @param diskName  磁盘名
+     * @param threadNum 处理线程数
+     * @return ResponseEntity<String>
+     */
+    @ApiOperation(value = "批量创建文件文档", notes = "批量创建文件文档")
+    @PostMapping(value = "/batch")
+    public ResponseEntity<String> batchCreateFileItemDocument(
+            @RequestParam String path,
+            @RequestParam String diskName,
+            @RequestParam(value = "threadNum", required = false) Integer threadNum) {
+        ResponseEntity<String> responseEntity;
+        long startTimeStamp = System.currentTimeMillis();
+        try {
+            threadNum = (null == threadNum || threadNum <= 0) ? THREAD_NUM : threadNum;
+
+            File pathfile = new File(path);
+            if (!pathfile.isDirectory()) {
+                return new ResponseEntity<>(ResponseMsg.PATH_IS_ILLEGAL.getResponseCode(), HttpStatus.BAD_REQUEST);
+            }
+
+            List<File> fileList = new ArrayList<>();
+            try {
+                FileUtil.resetFileList();
+                fileList = FileUtil.getFileList(path);
+                logger.info("[batchCreateFileItemDocument] fileList's size: " + fileList.size());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 开启10个线程处理
+            ExecutorService fixedThreadPool = Executors.newFixedThreadPool(threadNum);
+
+            List<List<File>> littleFileList = FileUtil.splitFileList(fileList, threadNum);
+            CountDownLatch countDownLatch = new CountDownLatch(littleFileList.size());
+            for (List<File> littleUnit : littleFileList) {
+                fixedThreadPool.execute(() -> {
+                    for (File file : littleUnit) {
+                        FileItem fileItem = new FileItem(file.getName(), file.getPath(), diskName, FileUtil.getShowSize(file.length()));
+                        fileItemService.save(fileItem);
+                    }
+                    countDownLatch.countDown();
+                });
+            }
+            try {
+                countDownLatch.await();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.FILE_ITEM_DOCUMENT_BATCH_CREATE_SUCCESS.getResponseCode(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.FILE_ITEM_DOCUMENT_BATCH_CREATE_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.info("[batchCreateFileItemDocument] all finished.");
+        long endTimeStamp = System.currentTimeMillis();
+        logger.info("[batchCreateFileItemDocument] cost:" + (endTimeStamp - startTimeStamp) + "ms.");
         return responseEntity;
     }
 
@@ -86,6 +168,26 @@ public class FileItemController {
     }
 
     /**
+     * 删除文件索引
+     */
+    @ApiOperation(value = "删除文件索引", notes = "删除文件索引")
+    @DeleteMapping(value = "/index")
+    public ResponseEntity<String> deleteFileItemIndex() {
+        ResponseEntity<String> responseEntity;
+        try {
+            fileItemService.deleteFileItemIndex();
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.FILE_ITEM_INDEX_DELETE_SUCCESS.getResponseCode(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            responseEntity = new ResponseEntity<>(
+                    ResponseMsg.FILE_ITEM_INDEX_DELETE_ERROR.getResponseCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
      * 搜索文件(版本号v1: 简单查询)
      *
      * @param searchKey     关键字
@@ -102,6 +204,7 @@ public class FileItemController {
                                    @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                    @RequestParam(value = "sortField", required = false) String sortField,
                                    @RequestParam(value = "sortDirection", required = false) String sortDirection) {
+        logger.info("[searchV1], searchKey: " + searchKey);
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (!StringUtils.isEmpty(searchKey)) {
@@ -113,6 +216,72 @@ public class FileItemController {
         }
         Pageable pageable = generatePageable(page, pageSize, sortField, sortDirection);
         return fileItemService.search(boolQuery, pageable);
+    }
+
+    /**
+     * 搜索文件(版本号v3: 高亮查询)
+     *
+     * @param searchKey     搜索关键字
+     * @param page          页数(默认第1页)
+     * @param limit         分页大小(默认单页10条)
+     * @param sortField     排序字段
+     * @param sortDirection ASC: "升序"  DESC:"降序"
+     * @param highLightFlag 高亮FLAG开关 0:"关闭"  1:"开启" 默认开启
+     * @return 搜索结果
+     */
+    @ApiOperation(value = "搜索商品(版本号v3: 高亮查询)", notes = "搜索商品(版本号v3: 高亮查询)")
+    @GetMapping(value = "/v3")
+    public ResponseEntity<Page<FileItem>> searchV3(@RequestParam(required = false) String searchKey,
+                                                   @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                   @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+                                                   @RequestParam(value = "sortField", required = false) String sortField,
+                                                   @RequestParam(value = "sortDirection", required = false) String sortDirection,
+                                                   @RequestParam(value = "highLightFlag", required = false, defaultValue = "1") String highLightFlag) {
+        logger.info("[searchV3], searchKey: " + searchKey);
+
+        ResponseEntity<Page<FileItem>> responseEntity;
+        try {
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+            List<String> highLightFieldList = new ArrayList<>();
+            highLightFieldList.add("fileName");
+            highLightFieldList.add("filePath");
+
+            // 关闭高亮可以直接清除所有高亮域
+            if (Constant.HIGHLIGHT_FLAG_CLOSE.equals(highLightFlag)) {
+                highLightFieldList.clear();
+            }
+
+            if (!StringUtils.isEmpty(searchKey)) {
+                // must
+                // 根据关键字匹配若干字段,商品名称、SEO关键字及SEO描述
+                MultiMatchQueryBuilder keywordMmqb = QueryBuilders.multiMatchQuery(searchKey,
+                        "fileName", "filePath");
+                boolQuery = boolQuery.must(keywordMmqb);
+            }
+
+            HighlightBuilder.Field[] highLightFields = new HighlightBuilder.Field[highLightFieldList.size()];
+
+            for (int i = 0; i < highLightFieldList.size(); i++) {
+                highLightFields[i] = new HighlightBuilder.Field(highLightFieldList.get(i))
+                        .preTags("<font color='red'>")
+                        .postTags("</font>")
+                        .fragmentSize(250);
+            }
+
+            Pageable pageable = generatePageable(page, limit, sortField, sortDirection);
+            NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder().withQuery(boolQuery).withPageable(pageable);
+            nativeSearchQueryBuilder = nativeSearchQueryBuilder.withHighlightFields(highLightFields);
+
+            SearchQuery searchQuery = nativeSearchQueryBuilder.build();
+            Page<FileItem> fileItemPage = fileItemService.highLightSearch(searchQuery, highLightFieldList);
+            responseEntity = new ResponseEntity<>(fileItemPage, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[searchV3] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new AggregatedPageImpl<>(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
     }
 
     /**

@@ -4,6 +4,9 @@ import com.bc.wd.server.entity.FileItem;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
+
+import java.util.List;
 
 /**
  * 文件
@@ -26,6 +29,11 @@ public interface FileItemService {
     void deleteFileItemByDiskName(String diskName);
 
     /**
+     * 删除文件索引
+     */
+    void deleteFileItemIndex();
+
+    /**
      * 搜索文件
      *
      * @param queryBuilder 请求参数
@@ -33,4 +41,13 @@ public interface FileItemService {
      * @return 搜索结果
      */
     Page<FileItem> search(QueryBuilder queryBuilder, Pageable pageable);
+
+    /**
+     * 高亮查询
+     *
+     * @param searchQuery        请求参数
+     * @param highLightFieldList 高亮字段
+     * @return 搜索结果
+     */
+    Page<FileItem> highLightSearch(SearchQuery searchQuery, List<String> highLightFieldList);
 }

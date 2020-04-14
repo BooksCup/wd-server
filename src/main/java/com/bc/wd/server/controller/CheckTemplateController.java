@@ -33,7 +33,7 @@ public class CheckTemplateController {
     private static final Logger logger = LoggerFactory.getLogger(CheckTemplateController.class);
 
     @Resource
-    private GoodsService goodsService;
+    GoodsService goodsService;
 
     /**
      * 查询物品违规原因

@@ -1,8 +1,11 @@
 package com.bc.wd.server.util;
 
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -78,5 +81,29 @@ public class CommonUtil {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
         return formatter.format(timeStamp);
+    }
+
+    /**
+     * map转对象
+     *
+     * @param map       map
+     * @param beanClass 对象的class
+     * @return 对象实体
+     */
+    public static Object map2Object(Map<String, Object> map, Class<?> beanClass) {
+        Object obj;
+        try {
+            if (map == null) {
+                return null;
+            }
+            obj = beanClass.newInstance();
+
+            BeanUtils.populate(obj, map);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            obj = null;
+        }
+        return obj;
     }
 }
