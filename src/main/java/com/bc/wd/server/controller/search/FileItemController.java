@@ -211,7 +211,7 @@ public class FileItemController {
             // must
             // 根据关键字匹配若干字段,文件名、文件路径
             MultiMatchQueryBuilder keywordMmqb = QueryBuilders.multiMatchQuery(searchKey,
-                    "fileName", "filePath");
+                    "fileName", "filePath", "fileName.pinyin");
             boolQuery = boolQuery.must(keywordMmqb);
         }
         Pageable pageable = generatePageable(page, pageSize, sortField, sortDirection);
@@ -245,6 +245,7 @@ public class FileItemController {
 
             List<String> highLightFieldList = new ArrayList<>();
             highLightFieldList.add("fileName");
+            highLightFieldList.add("fileName.pinyin");
             highLightFieldList.add("filePath");
 
             // 关闭高亮可以直接清除所有高亮域
@@ -256,7 +257,7 @@ public class FileItemController {
                 // must
                 // 根据关键字匹配若干字段,商品名称、SEO关键字及SEO描述
                 MultiMatchQueryBuilder keywordMmqb = QueryBuilders.multiMatchQuery(searchKey,
-                        "fileName", "filePath");
+                        "fileName", "filePath", "fileName.pinyin");
                 boolQuery = boolQuery.must(keywordMmqb);
             }
 

@@ -1,5 +1,6 @@
 package com.bc.wd.server.service.impl;
 
+import com.bc.wd.server.cons.Constant;
 import com.bc.wd.server.entity.FileItem;
 import com.bc.wd.server.es.repository.FileItemRepository;
 import com.bc.wd.server.service.FileItemService;
@@ -23,6 +24,7 @@ import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPa
 import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,8 +110,15 @@ public class FileItemServiceImpl implements FileItemService {
                 for (SearchHit searchHit : searchHits) {
                     Map<String, Object> entityMap = searchHit.getSourceAsMap();
                     for (String highLightField : highLightFieldList) {
-                        String highLightValue = searchHit.getHighlightFields().get(highLightField).fragments()[0].toString();
-                        entityMap.put(highLightField, highLightValue);
+                        if (!StringUtils.isEmpty(searchHit.getHighlightFields().get(highLightField))) {
+                            String highLightValue = searchHit.getHighlightFields().get(highLightField).fragments()[0].toString();
+                            if (highLightField.contains(Constant.FIELD_TYPE_PINYIN)) {
+                                entityMap.put(highLightField.replace(Constant.FIELD_TYPE_PINYIN, ""), highLightValue);
+                            } else {
+                                entityMap.put(highLightField, highLightValue);
+                            }
+
+                        }
                     }
                     results.add((T) CommonUtil.map2Object(entityMap, FileItem.class));
                 }

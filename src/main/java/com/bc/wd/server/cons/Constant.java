@@ -106,4 +106,9 @@ public class Constant {
      * 高亮-关闭
      */
     public static final String HIGHLIGHT_FLAG_CLOSE = "0";
+
+    /**
+     * 字段类型-拼音
+     */
+    public static final String FIELD_TYPE_PINYIN = ".pinyin";
 }
