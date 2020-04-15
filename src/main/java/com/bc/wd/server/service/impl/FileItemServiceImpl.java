@@ -10,6 +10,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -113,5 +116,39 @@ public class FileItemServiceImpl implements FileItemService {
                 return new AggregatedPageImpl<>(results, pageable, totalHits, response.getAggregations(), response.getScrollId());
             }
         });
+    }
+
+    /**
+     * 补齐搜索
+     *
+     * @param field  补齐域
+     * @param prefix 搜索前缀
+     * @param size   搜索结果数量
+     * @return 搜索结果列表
+     */
+    @Override
+    public List<String> suggestSearch(String field, String prefix, Integer size) {
+        CompletionSuggestionBuilder completionSuggestionBuilder = new CompletionSuggestionBuilder(
+                field);
+        completionSuggestionBuilder.text(prefix);
+        completionSuggestionBuilder.size(size);
+
+        SuggestBuilder suggestBuilder = new SuggestBuilder().addSuggestion(field,
+                completionSuggestionBuilder);
+
+        SearchResponse suggestResponse = elasticsearchTemplate.suggest(suggestBuilder, FileItem.class);
+        // 用来处理的接受结果
+        List<String> resultList = new ArrayList<>();
+
+        List<? extends Suggest.Suggestion.Entry<? extends Suggest.Suggestion.Entry.Option>> entries = suggestResponse.getSuggest().getSuggestion(
+                field).getEntries();
+        // 处理结果
+        for (Suggest.Suggestion.Entry<? extends Suggest.Suggestion.Entry.Option> op : entries) {
+            List<? extends Suggest.Suggestion.Entry.Option> options = op.getOptions();
+            for (Suggest.Suggestion.Entry.Option option : options) {
+                resultList.add(option.getText().toString());
+            }
+        }
+        return resultList;
     }
 }

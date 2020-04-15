@@ -24,7 +24,7 @@ public class CreateTaskSchedule {
     private static final Logger logger = LoggerFactory.getLogger(CreateTaskSchedule.class);
 
     @Resource
-    private TaskService taskService;
+    TaskService taskService;
 
     /**
      * 每天凌晨1点执行

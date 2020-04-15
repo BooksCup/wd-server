@@ -31,25 +31,26 @@ public class CheckSchedule {
     private static final Logger logger = LoggerFactory.getLogger(CheckSchedule.class);
 
     @Resource
-    private TaskService taskService;
+    TaskService taskService;
 
     @Resource
-    private GoodsService goodsService;
+    GoodsService goodsService;
 
     @Resource
-    private MailService mailService;
+    MailService mailService;
 
     @Resource
-    private MailSendLogService mailSendLogService;
+    MailSendLogService mailSendLogService;
 
     @Scheduled(cron = "0/20 * * * * ?")
     private void execute() {
-        logger.info("CheckSchedule start...");
-        logger.info("time: " + LocalTime.now());
         String osName = System.getProperties().getProperty("os.name");
         if (osName.toLowerCase().startsWith(Constant.OS_NAME_WINDOWS)) {
             return;
         }
+        logger.info("CheckSchedule start...");
+        logger.info("time: " + LocalTime.now());
+
         List<Task> todoTaskList = taskService.getTodoTaskList();
         for (Task task : todoTaskList) {
             long beginTimeStamp = System.currentTimeMillis();

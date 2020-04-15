@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Document(indexName = "file_item", type = "file_item", shards = 1, replicas = 0, refreshInterval = "-1")
 public class FileItem {
     private String id;
+
     private String fileName;
     private String filePath;
     private String diskName;

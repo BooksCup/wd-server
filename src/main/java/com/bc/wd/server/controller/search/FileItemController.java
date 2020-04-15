@@ -285,6 +285,33 @@ public class FileItemController {
     }
 
     /**
+     * 文件搜索词补齐
+     *
+     * @param prefix  搜索前缀
+     * @param topSize 搜索结果数量
+     * @return 搜索结果列表
+     */
+    @ApiOperation(value = "文件搜索词补齐", notes = "文件搜索词补齐")
+    @GetMapping(value = "/suggest")
+    public ResponseEntity<List<String>> suggest(@RequestParam(required = false) String prefix,
+                                                @RequestParam(value = "topSize", required = false, defaultValue = "5") Integer topSize) {
+        logger.info("[suggest] prefix: " + prefix);
+        ResponseEntity<List<String>> responseEntity;
+        try {
+            if (StringUtils.isEmpty(prefix)) {
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+            }
+            List<String> suggestList = fileItemService.suggestSearch("suggest", prefix, topSize);
+            responseEntity = new ResponseEntity<>(suggestList, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("[suggest] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
      * 生成分页参数
      *
      * @param page          页数(默认第1页)

@@ -50,4 +50,14 @@ public interface FileItemService {
      * @return 搜索结果
      */
     Page<FileItem> highLightSearch(SearchQuery searchQuery, List<String> highLightFieldList);
+
+    /**
+     * 补齐搜索
+     *
+     * @param field  补齐域
+     * @param prefix 搜索前缀
+     * @param size   搜索结果数量
+     * @return 搜索结果列表
+     */
+    List<String> suggestSearch(String field, String prefix, Integer size);
 }
