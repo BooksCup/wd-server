@@ -43,13 +43,13 @@ public interface FileItemService {
     Page<FileItem> search(QueryBuilder queryBuilder, Pageable pageable);
 
     /**
-     * 高亮查询
+     * 复杂查询(高亮 + 拼音)
      *
      * @param searchQuery        请求参数
      * @param highLightFieldList 高亮字段
      * @return 搜索结果
      */
-    Page<FileItem> highLightSearch(SearchQuery searchQuery, List<String> highLightFieldList);
+    Page<FileItem> complexSearch(SearchQuery searchQuery, List<String> highLightFieldList);
 
     /**
      * 补齐搜索

@@ -219,7 +219,7 @@ public class FileItemController {
     }
 
     /**
-     * 搜索文件(版本号v3: 高亮查询)
+     * 搜索文件(版本号v3: 高亮+拼音 查询)
      *
      * @param searchKey     搜索关键字
      * @param page          页数(默认第1页)
@@ -229,7 +229,7 @@ public class FileItemController {
      * @param highLightFlag 高亮FLAG开关 0:"关闭"  1:"开启" 默认开启
      * @return 搜索结果
      */
-    @ApiOperation(value = "搜索商品(版本号v3: 高亮查询)", notes = "搜索商品(版本号v3: 高亮查询)")
+    @ApiOperation(value = "搜索文件(版本号v3: 高亮+拼音 查询)", notes = "搜索文件(版本号v3: 高亮+拼音 查询)")
     @GetMapping(value = "/v3")
     public ResponseEntity<Page<FileItem>> searchV3(@RequestParam(required = false) String searchKey,
                                                    @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -276,7 +276,7 @@ public class FileItemController {
             nativeSearchQueryBuilder = nativeSearchQueryBuilder.withHighlightFields(highLightFields);
 
             SearchQuery searchQuery = nativeSearchQueryBuilder.build();
-            Page<FileItem> fileItemPage = fileItemService.highLightSearch(searchQuery, highLightFieldList);
+            Page<FileItem> fileItemPage = fileItemService.complexSearch(searchQuery, highLightFieldList);
             responseEntity = new ResponseEntity<>(fileItemPage, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

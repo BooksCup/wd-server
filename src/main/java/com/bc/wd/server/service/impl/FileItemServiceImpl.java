@@ -92,14 +92,14 @@ public class FileItemServiceImpl implements FileItemService {
     }
 
     /**
-     * 高亮查询
+     * 复杂查询(高亮 + 拼音)
      *
      * @param searchQuery        请求参数
      * @param highLightFieldList 高亮字段
      * @return 搜索结果
      */
     @Override
-    public Page<FileItem> highLightSearch(SearchQuery searchQuery, List<String> highLightFieldList) {
+    public Page<FileItem> complexSearch(SearchQuery searchQuery, List<String> highLightFieldList) {
         return elasticsearchTemplate.queryForPage(searchQuery, FileItem.class, new SearchResultMapper() {
             @SuppressWarnings("unchecked")
             @Override
@@ -113,11 +113,15 @@ public class FileItemServiceImpl implements FileItemService {
                         if (!StringUtils.isEmpty(searchHit.getHighlightFields().get(highLightField))) {
                             String highLightValue = searchHit.getHighlightFields().get(highLightField).fragments()[0].toString();
                             if (highLightField.contains(Constant.FIELD_TYPE_PINYIN)) {
-                                entityMap.put(highLightField.replace(Constant.FIELD_TYPE_PINYIN, ""), highLightValue);
+                                String highLightFieldWithOutPinyin = highLightField.replace(Constant.FIELD_TYPE_PINYIN, "");
+                                if (StringUtils.isEmpty(searchHit.getHighlightFields().get(highLightFieldWithOutPinyin))) {
+                                    entityMap.put(highLightFieldWithOutPinyin, highLightValue);
+                                } else {
+                                    entityMap.put(highLightFieldWithOutPinyin, searchHit.getHighlightFields().get(highLightFieldWithOutPinyin));
+                                }
                             } else {
                                 entityMap.put(highLightField, highLightValue);
                             }
-
                         }
                     }
                     results.add((T) CommonUtil.map2Object(entityMap, FileItem.class));
