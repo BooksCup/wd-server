@@ -238,15 +238,15 @@ public class FileItemController {
                                                    @RequestParam(value = "sortDirection", required = false) String sortDirection,
                                                    @RequestParam(value = "highLightFlag", required = false, defaultValue = "1") String highLightFlag) {
         logger.info("[searchV3], searchKey: " + searchKey);
-
         ResponseEntity<Page<FileItem>> responseEntity;
         try {
             BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
             List<String> highLightFieldList = new ArrayList<>();
             highLightFieldList.add("fileName");
-            highLightFieldList.add("fileName.pinyin");
             highLightFieldList.add("filePath");
+            highLightFieldList.add("fileName" + Constant.FIELD_TYPE_PINYIN);
+            highLightFieldList.add("filePath" + Constant.FIELD_TYPE_PINYIN);
 
             // 关闭高亮可以直接清除所有高亮域
             if (Constant.HIGHLIGHT_FLAG_CLOSE.equals(highLightFlag)) {
@@ -257,7 +257,8 @@ public class FileItemController {
                 // must
                 // 根据关键字匹配若干字段,商品名称、SEO关键字及SEO描述
                 MultiMatchQueryBuilder keywordMmqb = QueryBuilders.multiMatchQuery(searchKey,
-                        "fileName", "filePath", "fileName.pinyin");
+                        "fileName", "filePath",
+                        "fileName" + Constant.FIELD_TYPE_PINYIN, "filePath" + Constant.FIELD_TYPE_PINYIN);
                 boolQuery = boolQuery.must(keywordMmqb);
             }
 

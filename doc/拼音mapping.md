@@ -73,6 +73,12 @@ PUT /file_item/file_item/_mapping
 					"keyword": {
 						"type": "keyword",
 						"ignore_above": 256
+					},
+					"pinyin": {
+						"type": "text",
+						"analyzer": "pinyin_analyzer",
+						"search_analyzer": "standard",
+						"term_vector": "with_positions_offsets"
 					}
 				}
 			},
