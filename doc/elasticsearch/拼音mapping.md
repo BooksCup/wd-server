@@ -1,4 +1,5 @@
 ### 1.创建index:
+``` java
 PUT /file_item
 {
 	"settings": {
@@ -37,8 +38,9 @@ PUT /file_item
 		}
 	}
 }
-
+```
 ### 2.修改mapping:
+``` java
 PUT /file_item/file_item/_mapping  
 {
 	"file_item": {
@@ -103,3 +105,4 @@ PUT /file_item/file_item/_mapping
 		}
 	}
 }
+```
