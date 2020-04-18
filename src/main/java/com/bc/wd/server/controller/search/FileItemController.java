@@ -8,6 +8,7 @@ import com.bc.wd.server.util.FileUtil;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.slf4j.Logger;
@@ -229,9 +230,10 @@ public class FileItemController {
      * @param highLightFlag 高亮FLAG开关 0:"关闭"  1:"开启" 默认开启
      * @return 搜索结果
      */
-    @ApiOperation(value = "搜索文件(版本号v3: 高亮+拼音 查询)", notes = "搜索文件(版本号v3: 高亮+拼音 查询)")
+    @ApiOperation(value = "搜索文件(版本号v3: 复杂查询(高亮+拼音))", notes = "搜索文件(版本号v3: 复杂查询(高亮+拼音))")
     @GetMapping(value = "/v3")
     public ResponseEntity<Page<FileItem>> searchV3(@RequestParam(required = false) String searchKey,
+                                                   @RequestParam(required = false) String diskName,
                                                    @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                                                    @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
                                                    @RequestParam(value = "sortField", required = false) String sortField,
@@ -262,6 +264,12 @@ public class FileItemController {
                 boolQuery = boolQuery.must(keywordMmqb);
             }
 
+            QueryBuilder postFilter = null;
+            if (!StringUtils.isEmpty(diskName)) {
+                // 根据diskName过滤
+                postFilter = QueryBuilders.termQuery("diskName", diskName);
+            }
+
             HighlightBuilder.Field[] highLightFields = new HighlightBuilder.Field[highLightFieldList.size()];
 
             for (int i = 0; i < highLightFieldList.size(); i++) {
@@ -274,7 +282,9 @@ public class FileItemController {
             Pageable pageable = generatePageable(page, limit, sortField, sortDirection);
             NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder().withQuery(boolQuery).withPageable(pageable);
             nativeSearchQueryBuilder = nativeSearchQueryBuilder.withHighlightFields(highLightFields);
-
+            if (null != postFilter) {
+                nativeSearchQueryBuilder = nativeSearchQueryBuilder.withFilter(postFilter);
+            }
             SearchQuery searchQuery = nativeSearchQueryBuilder.build();
             Page<FileItem> fileItemPage = fileItemService.complexSearch(searchQuery, highLightFieldList);
             responseEntity = new ResponseEntity<>(fileItemPage, HttpStatus.OK);
