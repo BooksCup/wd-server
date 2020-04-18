@@ -60,4 +60,11 @@ public interface FileItemService {
      * @return 搜索结果列表
      */
     List<String> suggestSearch(String field, String prefix, Integer size);
+
+    /**
+     * 获取磁盘名列表
+     *
+     * @return 磁盘名列表
+     */
+    List<String> getDiskNameList();
 }

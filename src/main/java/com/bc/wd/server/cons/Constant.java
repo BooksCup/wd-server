@@ -111,4 +111,14 @@ public class Constant {
      * 字段类型-拼音
      */
     public static final String FIELD_TYPE_PINYIN = ".pinyin";
+
+    /**
+     * index-'file_item'
+     */
+    public static final String INDEX_NAME_FILE_ITEM = "file_item";
+
+    /**
+     * type-'file_item'
+     */
+    public static final String TYPE_NAME_FILE_ITEM = "file_item";
 }

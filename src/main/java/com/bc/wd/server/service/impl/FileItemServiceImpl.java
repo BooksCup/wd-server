@@ -6,11 +6,15 @@ import com.bc.wd.server.es.repository.FileItemRepository;
 import com.bc.wd.server.service.FileItemService;
 import com.bc.wd.server.util.CommonUtil;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
@@ -22,6 +26,7 @@ import org.springframework.data.elasticsearch.core.SearchResultMapper;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
 import org.springframework.data.elasticsearch.core.query.DeleteQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -29,6 +34,8 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 /**
  * 文件
@@ -163,5 +170,31 @@ public class FileItemServiceImpl implements FileItemService {
             }
         }
         return resultList;
+    }
+
+    /**
+     * 获取磁盘名列表
+     *
+     * @return 磁盘名列表
+     */
+    @Override
+    public List<String> getDiskNameList() {
+        List<String> diskNameList = new ArrayList<>();
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(matchAllQuery())
+                .withSearchType(SearchType.QUERY_THEN_FETCH)
+                .withIndices(Constant.INDEX_NAME_FILE_ITEM).withTypes(Constant.TYPE_NAME_FILE_ITEM)
+                .addAggregation(AggregationBuilders.terms("diskName").field("diskName.keyword"))
+                .build();
+
+        // 聚合的结果
+        Aggregations aggregations = elasticsearchTemplate.query(searchQuery, response -> response.getAggregations());
+        // 获取聚合结果
+        StringTerms aggregation = (StringTerms) aggregations.asMap().get("diskName");
+        List<StringTerms.Bucket> bucketList = aggregation.getBuckets();
+        for (StringTerms.Bucket bucket : bucketList) {
+            diskNameList.add(bucket.getKeyAsString());
+        }
+        return diskNameList;
     }
 }

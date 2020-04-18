@@ -6,10 +6,18 @@ import com.bc.wd.server.enums.ResponseMsg;
 import com.bc.wd.server.service.FileItemService;
 import com.bc.wd.server.util.FileUtil;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -318,6 +326,26 @@ public class FileItemController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("[suggest] error: " + e.getMessage());
+            responseEntity = new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseEntity;
+    }
+
+    /**
+     * 获取磁盘名列表
+     *
+     * @return 磁盘名列表
+     */
+    @ApiOperation(value = "获取磁盘名列表", notes = "获取磁盘名列表")
+    @GetMapping(value = "/diskName")
+    public ResponseEntity<List<String>> getDiskNameList() {
+        ResponseEntity<List<String>> responseEntity;
+        try {
+            List<String> diskNameList = fileItemService.getDiskNameList();
+            responseEntity = new ResponseEntity<>(diskNameList, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("[getDiskNameList] error: " + e.getMessage());
             responseEntity = new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
